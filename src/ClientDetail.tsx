@@ -75,15 +75,21 @@ const sections: {
   {
     title: "Additional Information",
     fields: [
+      { key: "code", label: "Code" },
       { key: "life_status", label: "Injured or martyred" },
+      { key: "personal_history", label: "Personal history" },
       { key: "widow", label: "Widow status" },
       { key: "orphan", label: "Orphan status" },
-      { key: "code", label: "Code" },
-      { key: "personal_history", label: "Personal history" },
-      { key: "client_image", label: "추가 이미지" },
-      { key: "family_id", label: "가족 ID" },
     ],
   },
+  {
+    title: "Family Information",
+    fields: [
+      { key: "family_id", label: "Family ID" },
+      { key: "client_image", label: "Family pictures" },
+    ],
+  },
+  
 ];
 
 export default function ClientDetail() {
