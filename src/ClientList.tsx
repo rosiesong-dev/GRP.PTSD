@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 import { useNavigate } from "react-router-dom";
+import "./ClientList.css";
 
 type Client = {
   id: number;
@@ -85,7 +86,7 @@ export default function ClientList() {
       {/* 📋 테이블 */}
       <div className="card">
         {loading ? (
-          <p>로딩 중...</p>
+          <p>Loading ...</p>
         ) : (
           <table width="100%" cellPadding={8}>
             <thead>
@@ -108,11 +109,11 @@ export default function ClientList() {
               ) : (
                 clients.map((c) => (
                   <tr key={c.id}>
-                    <td>{c.id}</td>
-                    <td>{c.name ?? "No info"}</td>
-                    <td>{c.birth_date ?? "No info"}</td>
-                    <td>{c.cnic_number ?? "No info"}</td>
-                    <td>{c.mobile ?? "No info"}</td>
+                    <td style={{ textAlign: "center" }}>{c.id}</td>
+                    <td style={{ textAlign: "center" }}>{c.name ?? "No info"}</td>
+                    <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
+                    <td style={{ textAlign: "center" }}>{c.cnic_number ?? "No info"}</td>
+                    <td style={{ textAlign: "center" }}>{c.mobile ?? "No info"}</td>
                     <td>
                       <button
                         className="primary"
@@ -135,10 +136,11 @@ export default function ClientList() {
           marginTop: "20px",
           display: "flex",
           alignItems: "center",
+          justifyContent: "center",
           gap: "10px",
         }}
       >
-        <button
+        <button 
           disabled={page === 1}
           onClick={() => setPage((p) => p - 1)}
         >
@@ -149,7 +151,7 @@ export default function ClientList() {
           {page} / {totalPages || 1}
         </span>
 
-        <button
+        <button 
           disabled={page === totalPages}
           onClick={() => setPage((p) => p + 1)}
         >
