@@ -184,10 +184,19 @@ export default function ClientList() {
           flexWrap: "wrap",
         }}
       >
+        {/* 처음 페이지 */}
+        <button
+          disabled={page === 1 || totalPages === 0}
+          onClick={() => setPage(1)}
+        >
+          ≪
+        </button>
+        {/* 이전 페이지 */}
         <button disabled={page === 1} onClick={() => setPage(page - 1)}>
           ◀
         </button>
 
+        {/* 페이지 번호 */}
         {getPageNumbers().map((p) => (
           <button
             key={p}
@@ -204,12 +213,19 @@ export default function ClientList() {
             {p}
           </button>
         ))}
-
+        {/* 다음 페이지 */}
         <button
           disabled={page === totalPages || totalPages === 0}
           onClick={() => setPage(page + 1)}
         >
           ▶
+        </button>
+        {/* 제일 끝으로 이동 버튼 */}
+        <button
+          disabled={page === totalPages || totalPages === 0}
+          onClick={() => setPage(totalPages)}
+        >
+          ≫
         </button>
       </div>
     </div>
