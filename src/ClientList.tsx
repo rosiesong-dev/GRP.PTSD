@@ -10,7 +10,7 @@ type Client = {
   mobile: string | null;
 };
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 10;
 
 export default function ClientList() {
   const navigate = useNavigate();
@@ -93,7 +93,7 @@ export default function ClientList() {
                 <th>ID</th>
                 <th>Name</th>
                 <th>Birth Date</th>
-                <th>CNIC</th>
+                <th>CNIC number</th>
                 <th>Mobile</th>
                 <th></th>
               </tr>
@@ -109,10 +109,10 @@ export default function ClientList() {
                 clients.map((c) => (
                   <tr key={c.id}>
                     <td>{c.id}</td>
-                    <td>{c.name ?? "정보 없음"}</td>
-                    <td>{c.birth_date ?? "정보 없음"}</td>
-                    <td>{c.cnic_number ?? "정보 없음"}</td>
-                    <td>{c.mobile ?? "정보 없음"}</td>
+                    <td>{c.name ?? "No info"}</td>
+                    <td>{c.birth_date ?? "No info"}</td>
+                    <td>{c.cnic_number ?? "No info"}</td>
+                    <td>{c.mobile ?? "No info"}</td>
                     <td>
                       <button
                         className="primary"
