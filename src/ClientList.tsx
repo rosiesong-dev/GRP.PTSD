@@ -12,7 +12,7 @@ type Client = {
 };
 
 const PAGE_SIZE = 10;
-const PAGE_GROUP_SIZE = 10; // ⭐ 페이지 번호 10개씩
+const PAGE_GROUP_SIZE = 10; // 페이지 번호 10개씩
 
 export default function ClientList() {
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ export default function ClientList() {
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-  // ⭐ 10개씩 페이지 번호 계산
+  // 🔢 페이지 번호 10개씩 계산
   const getPageNumbers = () => {
     const pages: number[] = [];
 
@@ -76,27 +76,47 @@ export default function ClientList() {
     return pages;
   };
 
+  const handleAddClient = () => {
+    navigate("/clientCreate");
+  };
+
   return (
     <div className="container">
       <h1>Clients List</h1>
 
-      {/* 🔍 검색 */}
-      <input
-        type="text"
-        placeholder="Search by name"
-        value={search}
-        onChange={(e) => {
-          setPage(1);
-          setSearch(e.target.value);
-        }}
+      {/* 🔍 검색 + ➕ Add 버튼 */}
+      <div
         style={{
-          padding: "10px",
-          width: "300px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
           marginBottom: "20px",
-          borderRadius: "8px",
-          border: "1px solid #ccc",
         }}
-      />
+      >
+        <input
+          type="text"
+          placeholder="Search by name"
+          value={search}
+          onChange={(e) => {
+            setPage(1);
+            setSearch(e.target.value);
+          }}
+          style={{
+            padding: "10px",
+            width: "300px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
+        />
+
+        <button
+          className="primary"
+          onClick={handleAddClient}
+          style={{ padding: "10px 16px" }}
+        >
+          + Add
+        </button>
+      </div>
 
       {/* 📋 테이블 */}
       <div className="card">
@@ -164,15 +184,10 @@ export default function ClientList() {
           flexWrap: "wrap",
         }}
       >
-        {/* 이전 페이지 */}
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-        >
+        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
           ◀
         </button>
 
-        {/* 페이지 번호 (10개씩) */}
         {getPageNumbers().map((p) => (
           <button
             key={p}
@@ -184,16 +199,14 @@ export default function ClientList() {
               backgroundColor: p === page ? "#007bff" : "white",
               color: p === page ? "white" : "black",
               fontWeight: p === page ? "bold" : "normal",
-              cursor: "pointer",
             }}
           >
             {p}
           </button>
         ))}
 
-        {/* 다음 페이지 */}
         <button
-          disabled={page === totalPages}
+          disabled={page === totalPages || totalPages === 0}
           onClick={() => setPage(page + 1)}
         >
           ▶
