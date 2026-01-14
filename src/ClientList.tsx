@@ -12,6 +12,7 @@ type Client = {
 };
 
 const PAGE_SIZE = 10;
+const PAGE_GROUP_SIZE = 10; // ⭐ 페이지 번호 10개씩
 
 export default function ClientList() {
   const navigate = useNavigate();
@@ -41,7 +42,6 @@ export default function ClientList() {
       .range(from, to)
       .order("id", { ascending: true });
 
-    // 🔍 이름 포함 검색 (대소문자 무시)
     if (search.trim() !== "") {
       query = query.ilike("name", `%${search}%`);
     }
@@ -61,6 +61,21 @@ export default function ClientList() {
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
+  // ⭐ 10개씩 페이지 번호 계산
+  const getPageNumbers = () => {
+    const pages: number[] = [];
+
+    const start =
+      Math.floor((page - 1) / PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE + 1;
+    const end = Math.min(start + PAGE_GROUP_SIZE - 1, totalPages);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  };
+
   return (
     <div className="container">
       <h1>Clients List</h1>
@@ -71,7 +86,7 @@ export default function ClientList() {
         placeholder="Search by name"
         value={search}
         onChange={(e) => {
-          setPage(1); // 검색 시 페이지 초기화
+          setPage(1);
           setSearch(e.target.value);
         }}
         style={{
@@ -110,10 +125,18 @@ export default function ClientList() {
                 clients.map((c) => (
                   <tr key={c.id}>
                     <td style={{ textAlign: "center" }}>{c.id}</td>
-                    <td style={{ textAlign: "center" }}>{c.name ?? "No info"}</td>
-                    <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
-                    <td style={{ textAlign: "center" }}>{c.cnic_number ?? "No info"}</td>
-                    <td style={{ textAlign: "center" }}>{c.mobile ?? "No info"}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {c.name ?? "No info"}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {c.birth_date ?? "No info"}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {c.cnic_number ?? "No info"}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {c.mobile ?? "No info"}
+                    </td>
                     <td>
                       <button
                         className="primary"
@@ -137,25 +160,43 @@ export default function ClientList() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: "10px",
+          gap: "6px",
+          flexWrap: "wrap",
         }}
       >
-        <button 
+        {/* 이전 페이지 */}
+        <button
           disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
+          onClick={() => setPage(page - 1)}
         >
-          ◀ Previous
+          ◀
         </button>
 
-        <span>
-          {page} / {totalPages || 1}
-        </span>
+        {/* 페이지 번호 (10개씩) */}
+        {getPageNumbers().map((p) => (
+          <button
+            key={p}
+            onClick={() => setPage(p)}
+            style={{
+              padding: "6px 10px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              backgroundColor: p === page ? "#007bff" : "white",
+              color: p === page ? "white" : "black",
+              fontWeight: p === page ? "bold" : "normal",
+              cursor: "pointer",
+            }}
+          >
+            {p}
+          </button>
+        ))}
 
-        <button 
+        {/* 다음 페이지 */}
+        <button
           disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
+          onClick={() => setPage(page + 1)}
         >
-          Next ▶
+          ▶
         </button>
       </div>
     </div>

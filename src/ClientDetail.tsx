@@ -5,6 +5,7 @@ import "./ClientDetail.css";
 
 type Client = {
   id: number;
+  name: string | null;
   status: string | null;
   birth_date: string | null;
   age: number | null;
@@ -89,7 +90,6 @@ const sections: {
       { key: "client_image", label: "Family pictures" },
     ],
   },
-  
 ];
 
 export default function ClientDetail() {
@@ -112,9 +112,12 @@ export default function ClientDetail() {
       .eq("id", id)
       .single();
 
-    if (error) alert("데이터 로드 실패");
-    else setClient(data);
-
+    if (error) {
+      console.error(error);
+      alert("Failed to load client data");
+    } else {
+      setClient(data);
+    }
     setLoading(false);
   };
 
@@ -125,15 +128,16 @@ export default function ClientDetail() {
 
   const handleSave = async () => {
     if (!client) return;
-
     const { error } = await supabase
       .from("clients")
       .update(client)
       .eq("id", client.id);
 
-    if (error) alert("수정 실패");
-    else {
-      alert("수정 완료!");
+    if (error) {
+      console.error(error);
+      alert("Update failed");
+    } else {
+      alert("Saved successfully!");
       setEditMode(false);
       fetchClient();
     }
@@ -189,9 +193,7 @@ export default function ClientDetail() {
                             onChange={(e) =>
                               handleChange(
                                 key,
-                                e.target.value
-                                  .split(",")
-                                  .map((v) => v.trim())
+                                e.target.value.split(",").map((v) => v.trim())
                               )
                             }
                           />
@@ -204,10 +206,21 @@ export default function ClientDetail() {
                             }
                           />
                         )
-                      ) : Array.isArray(value) ? (
-                        value.join(", ") || "No info"
+                      ) 
+                      : key === "family_id" ? (
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          {value ?? "No info"}
+                          <button
+                            className="primary-btn"
+                            onClick={() => value && navigate(`/families/${value}`)}
+                          >
+                            View
+                          </button>
+                        </div>
                       ) : key === "widow" || key === "orphan" ? (
                         value ? "Yes" : "No"
+                      ) : Array.isArray(value) ? (
+                        value.join(", ") || "No info"
                       ) : value === null || value === "" ? (
                         "No info"
                       ) : (
