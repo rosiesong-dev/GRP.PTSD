@@ -6,36 +6,85 @@ import "./ClientDetail.css";
 type Client = {
   id: number;
   status: string | null;
-  name: string | null;
   birth_date: string | null;
+  age: number | null;
+  gender: string | null;
   cnic_number: string | null;
   mobile: string | null;
-  father_name: string | null;
-  guardian_name: string | null;
-  guardian_relation: string | null;
-  guardian_contact: string | null;
-  code: string | null;
-  disaster_id: number | null;
-  personal_history: string | null;
-  profile_image: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-  gender: string | null;
   contact_number: string | null;
   address: string | null;
+  father_name: string | null;
+  guardian_name: string | null;
+  guardian_contact: string | null;
+  life_status: string | null;
+  widow: boolean | null;
+  orphan: boolean | null;
+  code: string | null;
+  disaster_id: number | null;
   disaster_type: string | null;
   disaster_vtype: string | null;
   disaster_refer_to: string | null;
   disaster_case_manager: string | null;
   disaster_medical_coverage: string | null;
   disaster_result_action: string | null;
-  user_id: number | null;
+  personal_history: string | null;
+  profile_image: string | null;
   client_image: string[] | null;
   family_id: number | null;
-  life_status: string | null;
-  widow: boolean | null;
-  orphan: boolean | null;
 };
+
+const readOnlyFields: (keyof Client)[] = ["id", "family_id"];
+
+const sections: {
+  title: string;
+  fields: { key: keyof Client; label: string }[];
+}[] = [
+  {
+    title: "Basic Information",
+    fields: [
+      { key: "profile_image", label: "Profile (사진)" },
+      { key: "status", label: "Status" },
+      { key: "birth_date", label: "Birthday" },
+      { key: "age", label: "Age" },
+      { key: "gender", label: "Gender" },
+      { key: "cnic_number", label: "CNIC number" },
+    ],
+  },
+  {
+    title: "Contact & Guardian Information",
+    fields: [
+      { key: "mobile", label: "Phone number" },
+      { key: "address", label: "Address" },
+      { key: "father_name", label: "Father name" },
+      { key: "guardian_name", label: "Guardian name" },
+      { key: "guardian_contact", label: "Phone number (of Guardian)" },
+    ],
+  },
+  {
+    title: "Disaster Information",
+    fields: [
+      { key: "disaster_id", label: "Disaster ID" },
+      { key: "disaster_type", label: "Disaster type (재난 유형)" },
+      { key: "disaster_vtype", label: "Disaster victim type (재난 피해자 유형)" },
+      { key: "disaster_refer_to", label: "Disaster refer (의뢰 기관?)" },
+      { key: "disaster_case_manager", label: "Disaster case manager" },
+      { key: "disaster_medical_coverage", label: "Medical coverage" },
+      { key: "disaster_result_action", label: "Result" },
+    ],
+  },
+  {
+    title: "Additional Information",
+    fields: [
+      { key: "life_status", label: "Injured or martyred" },
+      { key: "widow", label: "Widow status" },
+      { key: "orphan", label: "Orphan status" },
+      { key: "code", label: "Code" },
+      { key: "personal_history", label: "Personal history" },
+      { key: "client_image", label: "추가 이미지" },
+      { key: "family_id", label: "가족 ID" },
+    ],
+  },
+];
 
 export default function ClientDetail() {
   const { id } = useParams();
@@ -57,12 +106,9 @@ export default function ClientDetail() {
       .eq("id", id)
       .single();
 
-    if (error) {
-      console.error(error);
-      alert("데이터를 불러오지 못했습니다.");
-    } else {
-      setClient(data);
-    }
+    if (error) alert("데이터 로드 실패");
+    else setClient(data);
+
     setLoading(false);
   };
 
@@ -76,80 +122,103 @@ export default function ClientDetail() {
 
     const { error } = await supabase
       .from("clients")
-      .update({ ...client })
+      .update(client)
       .eq("id", client.id);
 
-    if (error) {
-      console.error(error);
-      alert("수정 실패");
-    } else {
+    if (error) alert("수정 실패");
+    else {
       alert("수정 완료!");
       setEditMode(false);
-      fetchClient(); // 최신 데이터 불러오기
+      fetchClient();
     }
   };
 
-  if (loading || !client) return <p>로딩 중...</p>;
+  if (loading || !client) return <p>Loading ...</p>;
 
   return (
     <div className="detail-container">
-      <h1>Client info</h1>
-      <button onClick={() => navigate(-1)}>◀ 목록으로</button>
-      <button onClick={() => setEditMode(!editMode)}>
-        {editMode ? "취소" : "수정"}
-      </button>
+      <h1>[ {client.name ?? "Client Detail"} ]</h1>
 
-      <table className="detail-table">
-        <tbody>
-          {Object.entries(client).map(([key, value]) => (
-            <tr key={key}>
-              <td className="field-name">{key}</td>
-              <td className="field-value">
-                {editMode ? (
-                  key === "widow" || key === "orphan" ? (
-                    <input
-                      type="checkbox"
-                      checked={!!value}
-                      onChange={(e) =>
-                        handleChange(key as keyof Client, e.target.checked)
-                      }
-                    />
-                  ) : Array.isArray(value) ? (
-                    <input
-                      type="text"
-                      value={(value as string[]).join(", ")}
-                      onChange={(e) =>
-                        handleChange(
-                          key as keyof Client,
-                          e.target.value.split(",").map((v) => v.trim())
+      <div className="detail-actions">
+        <button onClick={() => navigate(-1)}>◀ Go to list</button>
+        <button onClick={() => setEditMode(!editMode)}>
+          {editMode ? "Cancel" : "Update"}
+        </button>
+      </div>
+
+      {sections.map((section) => (
+        <div key={section.title} className="detail-section">
+          <h2>{section.title}</h2>
+          <table className="detail-table">
+            <tbody>
+              {section.fields.map(({ key, label }) => {
+                const value = client[key];
+                const readOnly = readOnlyFields.includes(key);
+
+                return (
+                  <tr key={key}>
+                    <td className="field-name">{label}</td>
+                    <td className="field-value">
+                      {editMode && !readOnly ? (
+                        key === "widow" || key === "orphan" ? (
+                          <input
+                            type="checkbox"
+                            checked={!!value}
+                            onChange={(e) =>
+                              handleChange(key, e.target.checked)
+                            }
+                          />
+                        ) : key === "birth_date" ? (
+                          <input
+                            type="date"
+                            value={value ?? ""}
+                            onChange={(e) =>
+                              handleChange(key, e.target.value)
+                            }
+                          />
+                        ) : Array.isArray(value) ? (
+                          <input
+                            type="text"
+                            value={value.join(", ")}
+                            onChange={(e) =>
+                              handleChange(
+                                key,
+                                e.target.value
+                                  .split(",")
+                                  .map((v) => v.trim())
+                              )
+                            }
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={value ?? ""}
+                            onChange={(e) =>
+                              handleChange(key, e.target.value)
+                            }
+                          />
                         )
-                      }
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={value ?? ""}
-                      onChange={(e) =>
-                        handleChange(key as keyof Client, e.target.value)
-                      }
-                    />
-                  )
-                ) : Array.isArray(value) ? (
-                  (value as string[]).join(", ") || "정보 없음"
-                ) : value === null || value === "" ? (
-                  "정보 없음"
-                ) : (
-                  value.toString()
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                      ) : Array.isArray(value) ? (
+                        value.join(", ") || "No info"
+                      ) : key === "widow" || key === "orphan" ? (
+                        value ? "Yes" : "No"
+                      ) : value === null || value === "" ? (
+                        "No info"
+                      ) : (
+                        value.toString()
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ))}
 
       {editMode && (
         <button className="save-btn" onClick={handleSave}>
-          저장
+          Save
         </button>
       )}
     </div>
