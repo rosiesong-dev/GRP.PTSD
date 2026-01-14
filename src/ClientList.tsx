@@ -67,7 +67,7 @@ export default function ClientList() {
       {/* 🔍 검색 */}
       <input
         type="text"
-        placeholder="이름 검색"
+        placeholder="Search by name"
         value={search}
         onChange={(e) => {
           setPage(1); // 검색 시 페이지 초기화
@@ -118,7 +118,7 @@ export default function ClientList() {
                         className="primary"
                         onClick={() => navigate(`/clients/${c.id}`)}
                       >
-                        상세보기
+                        View
                       </button>
                     </td>
                   </tr>
@@ -142,7 +142,7 @@ export default function ClientList() {
           disabled={page === 1}
           onClick={() => setPage((p) => p - 1)}
         >
-          ◀ 이전
+          ◀ Previous
         </button>
 
         <span>
@@ -153,7 +153,7 @@ export default function ClientList() {
           disabled={page === totalPages}
           onClick={() => setPage((p) => p + 1)}
         >
-          다음 ▶
+          Next ▶
         </button>
       </div>
     </div>
