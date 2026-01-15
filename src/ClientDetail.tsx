@@ -32,6 +32,8 @@ type Client = {
   profile_image: string | null;
   client_image: string[] | null;
   family_id: number | null;
+  injured_id: string | null;
+  martyr_id: string | null;
 };
 
 const readOnlyFields: (keyof Client)[] = ["id", "family_id"];
@@ -50,6 +52,8 @@ const sections: {
       { key: "age", label: "Age" },
       { key: "gender", label: "Gender" },
       { key: "cnic_number", label: "CNIC number" },
+      { key: "injured_id", label: "Injured number" },
+      { key: "martyr_id", label: "Martyred number" },
     ],
   },
   {
