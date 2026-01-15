@@ -1,0 +1,56 @@
+.family-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.family-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  background: white;
+}
+
+/* 한 줄 */
+.family-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+/* 왼쪽 라벨 */
+.label {
+  font-weight: 600;
+  color: #555;
+}
+
+/* 버튼 묶음 */
+.inline-group {
+  display: inline-flex;   /* ⭐ 절대 block 아님 */
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* 🔥 진짜 작고 안 늘어나는 버튼 */
+.mini-btn {
+  display: inline-flex;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  background: #4f6ef7;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: fit-content;     /* ⭐ 가로 늘어남 방지 */
+  white-space: nowrap;
+}
+
+.mini-btn:hover {
+  background: #3b55d9;
+}
+
+.bg-text {
+  line-height: 1.4;
+  color: #444;
+}
