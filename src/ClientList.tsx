@@ -35,10 +35,7 @@ export default function ClientList() {
 
     let query = supabase
       .from("clients")
-      .select(
-        "id, name, birth_date, cnic_number, mobile",
-        { count: "exact" }
-      )
+      .select("id, name, birth_date, cnic_number, mobile", { count: "exact" })
       .range(from, to)
       .order("id", { ascending: true });
 
@@ -64,35 +61,39 @@ export default function ClientList() {
   // 🔢 페이지 번호 10개씩 계산
   const getPageNumbers = () => {
     const pages: number[] = [];
-
-    const start =
-      Math.floor((page - 1) / PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE + 1;
+    const start = Math.floor((page - 1) / PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE + 1;
     const end = Math.min(start + PAGE_GROUP_SIZE - 1, totalPages);
 
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
+    for (let i = start; i <= end; i++) pages.push(i);
 
     return pages;
   };
 
   const handleAddClient = () => {
-    navigate("/clientCreate");
+    navigate("/AddClient");
   };
 
+  const handleDelete = async (id: number) => {
+  if (!window.confirm("정말 삭제하시겠습니까?")) return;
+
+  try {
+    const { data, error } = await supabase.rpc("update_family_remove_client", { p_client_id: id });
+
+    if (error) throw error;
+
+    alert("삭제 완료!");
+    fetchClients(); // 리스트 갱신
+  } catch (err: any) {
+    console.error("삭제 실패", err);
+    alert(`삭제 실패: ${err.message}`);
+  }
+};
   return (
     <div className="container">
       <h1>Clients List</h1>
 
       {/* 🔍 검색 + ➕ Add 버튼 */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "20px",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
         <input
           type="text"
           placeholder="Search by name"
@@ -101,19 +102,9 @@ export default function ClientList() {
             setPage(1);
             setSearch(e.target.value);
           }}
-          style={{
-            padding: "10px",
-            width: "300px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-          }}
+          style={{ padding: "10px", width: "300px", borderRadius: "8px", border: "1px solid #ccc" }}
         />
-
-        <button
-          className="primary"
-          onClick={handleAddClient}
-          style={{ padding: "10px 16px" }}
-        >
+        <button className="primary" onClick={handleAddClient} style={{ padding: "10px 16px" }}>
           + Add
         </button>
       </div>
@@ -131,7 +122,7 @@ export default function ClientList() {
                 <th>Birth Date</th>
                 <th>CNIC number</th>
                 <th>Mobile</th>
-                <th></th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -145,24 +136,20 @@ export default function ClientList() {
                 clients.map((c) => (
                   <tr key={c.id}>
                     <td style={{ textAlign: "center" }}>{c.id}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {c.name ?? "No info"}
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      {c.birth_date ?? "No info"}
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      {c.cnic_number ?? "No info"}
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      {c.mobile ?? "No info"}
-                    </td>
-                    <td>
+                    <td style={{ textAlign: "center" }}>{c.name ?? "No info"}</td>
+                    <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
+                    <td style={{ textAlign: "center" }}>{c.cnic_number ?? "No info"}</td>
+                    <td style={{ textAlign: "center" }}>{c.mobile ?? "No info"}</td>
+                    <td style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
+                      <button className="primary" onClick={() => navigate(`/clients/${c.id}`)}>
+                        View
+                      </button>
                       <button
                         className="primary"
-                        onClick={() => navigate(`/clients/${c.id}`)}
+                        style={{ backgroundColor: "gray", borderColor: "gray" }}
+                        onClick={() => handleDelete(c.id)}
                       >
-                        View
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -184,19 +171,9 @@ export default function ClientList() {
           flexWrap: "wrap",
         }}
       >
-        {/* 처음 페이지 */}
-        <button
-          disabled={page === 1 || totalPages === 0}
-          onClick={() => setPage(1)}
-        >
-          ≪
-        </button>
-        {/* 이전 페이지 */}
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
-          ◀
-        </button>
+        <button disabled={page === 1 || totalPages === 0} onClick={() => setPage(1)}>≪</button>
+        <button disabled={page === 1} onClick={() => setPage(page - 1)}>◀</button>
 
-        {/* 페이지 번호 */}
         {getPageNumbers().map((p) => (
           <button
             key={p}
@@ -213,20 +190,9 @@ export default function ClientList() {
             {p}
           </button>
         ))}
-        {/* 다음 페이지 */}
-        <button
-          disabled={page === totalPages || totalPages === 0}
-          onClick={() => setPage(page + 1)}
-        >
-          ▶
-        </button>
-        {/* 제일 끝으로 이동 버튼 */}
-        <button
-          disabled={page === totalPages || totalPages === 0}
-          onClick={() => setPage(totalPages)}
-        >
-          ≫
-        </button>
+
+        <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage(page + 1)}>▶</button>
+        <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage(totalPages)}>≫</button>
       </div>
     </div>
   );

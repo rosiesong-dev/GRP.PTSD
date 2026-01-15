@@ -43,6 +43,7 @@ const sections: {
   {
     title: "Basic Information",
     fields: [
+      { key: "name", label: "Name" },
       { key: "profile_image", label: "Profile (사진)" },
       { key: "status", label: "Status" },
       { key: "birth_date", label: "Birthday" },
@@ -109,7 +110,7 @@ export default function ClientDetail() {
     const { data, error } = await supabase
       .from("clients")
       .select("*")
-      .eq("id", id)
+      .eq("id", Number(id))
       .single();
 
     if (error) {
@@ -126,22 +127,46 @@ export default function ClientDetail() {
     setClient({ ...client, [field]: value });
   };
 
-  const handleSave = async () => {
-    if (!client) return;
-    const { error } = await supabase
-      .from("clients")
-      .update(client)
-      .eq("id", client.id);
+const handleSave = async () => {
+  if (!client) return;
 
-    if (error) {
-      console.error(error);
-      alert("Update failed");
-    } else {
-      alert("Saved successfully!");
-      setEditMode(false);
-      fetchClient();
+  const { id, ...data } = client;
+
+  // 1. 전송할 데이터 필터링 (DB 컬럼과 일치하는지 확인 필수)
+  const dataToUpdate: any = {};
+  Object.entries(data).forEach(([key, value]) => {
+    // 불필요한 필드(예: 관계형 데이터, 자동생성 컬럼)는 제외하는 로직 추가 권장
+    if (['created_at', 'updated_at'].includes(key)) return; 
+
+    if (value === undefined) dataToUpdate[key] = null;
+    else if (key === "widow" || key === "orphan") dataToUpdate[key] = !!value;
+    else dataToUpdate[key] = value;
+  });
+
+  try {
+    console.log("업데이트 시도 ID:", id, "데이터:", dataToUpdate);
+
+    const { data: responseData, error, status } = await supabase
+      .from("clients")
+      .update(dataToUpdate)
+      .eq("id", Number(id)) // ID 타입이 UUID라면 Number() 제거
+      .select(); // 업데이트된 결과를 반환받아 확인
+
+    if (error) throw error;
+
+    // 만약 error는 없는데 responseData가 비어있다면 .eq() 조건이 틀린 것임
+    if (!responseData || responseData.length === 0) {
+      console.warn("업데이트된 행이 없습니다. ID를 확인하세요.");
     }
-  };
+
+    alert("Saved successfully!");
+    setEditMode(false);
+    fetchClient();
+  } catch (err: any) {
+    console.error("Update failed detailed:", err);
+    alert(`Update failed: ${err.hint || err.message}`);
+  }
+};
 
   if (loading || !client) return <p>Loading ...</p>;
 
@@ -206,8 +231,7 @@ export default function ClientDetail() {
                             }
                           />
                         )
-                      ) 
-                      : key === "family_id" ? (
+                      ) : key === "family_id" ? (
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                           {value ?? "No info"}
                           <button
