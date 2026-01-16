@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "./lib/supabase";
 import "./FamilyList.css";
 
-// --------------------
 // Types
-// --------------------
 type Family = {
   id: number;
   fathers_id: number | null;
@@ -14,7 +12,7 @@ type Family = {
   daughters_ids: number[] | null;
   gr_fathers_id: number | null;
   gr_mothers_id: number | null;
-  family_photos: string | null; // e.g. "3-1"
+  family_photos: string | null; 
   family_background: string | null;
 };
 
@@ -23,9 +21,8 @@ type Client = {
   name: string | null;
 };
 
-// --------------------
+
 // Component
-// --------------------
 export default function FamilyList() {
   const navigate = useNavigate();
   const [families, setFamilies] = useState<any[]>([]);
@@ -35,9 +32,8 @@ export default function FamilyList() {
     fetchFamilies();
   }, []);
 
-  // --------------------
+
   // Fetch families + clients
-  // --------------------
   const fetchFamilies = async () => {
     setLoading(true);
 
@@ -73,9 +69,8 @@ export default function FamilyList() {
     setLoading(false);
   };
 
-  // --------------------
+
   // Generate photo URLs (1.png ~ maxPhotos.png)
-  // --------------------
   const getPhotoUrls = (folder: string | null, maxPhotos = 10) => {
     if (!folder) return [];
     const baseUrl = `https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/pictures/${folder}/`;
@@ -87,9 +82,8 @@ export default function FamilyList() {
     return urls;
   };
 
-  // --------------------
+
   // Render
-  // --------------------
   if (loading) return <p>Loading...</p>;
 
   return (
