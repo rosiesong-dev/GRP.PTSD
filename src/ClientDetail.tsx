@@ -91,7 +91,7 @@ const sections: {
   {
     title: "Family Information",
     fields: [
-      { key: "family_id", label: "Family ID" },
+      { key: "family_id", label: "Family info" },
       { key: "client_image", label: "Family pictures" },
     ],
   },
@@ -176,9 +176,9 @@ const handleSave = async () => {
 
   return (
     <div className="detail-container">
-      <h1>[ {client.name ?? "Client Detail"} ]</h1>
+      <h1>[{client.id ?? "Client Detail"}] {client.name ?? "Client Detail"} </h1>
 
-      <div className="detail-actions">
+      <div className="detail-actions" style={{ display: "flex", justifyContent: "space-between" }}>
         <button onClick={() => navigate(-1)}>◀ Go to list</button>
         <button onClick={() => setEditMode(!editMode)}>
           {editMode ? "Cancel" : "Update"}
@@ -237,7 +237,7 @@ const handleSave = async () => {
                         )
                       ) : key === "family_id" ? (
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          {value ?? "No info"}
+                          {/* {value ?? "No info"} */}
                           <button
                             className="primary-btn"
                             onClick={() => value && navigate(`/families/${value}`)}
