@@ -120,7 +120,7 @@ export default function FamilyList() {
 
   return (
     <div className="family-container">
-      <h1 style={{ textAlign: "center" }}>[ Family List ]</h1>
+      <h1 style={{ textAlign: "center" }}>[ Family  Info ]</h1>
 
       {families.map((f) => (
         <div key={f.id} className="family-card">
