@@ -29,45 +29,11 @@ type Client = {
 export default function FamilyList() {
   const navigate = useNavigate();
   const [families, setFamilies] = useState<any[]>([]);
-  const [photosMap, setPhotosMap] = useState<Record<number, string[]>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchFamilies();
   }, []);
-
-  // --------------------
-  // Fetch photos from Supabase Storage
-  // --------------------
-  const fetchFamilyPhotos = async (familyId: number, folderPath: string) => {
-    const { data, error } = await supabase.storage
-      .from("pictures")
-      .list(folderPath, { limit: 100, offset: 0 });
-
-    if (error) {
-      console.error("Photo load error:", error);
-      setPhotosMap((prev) => ({ ...prev, [familyId]: [] }));
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      setPhotosMap((prev) => ({ ...prev, [familyId]: [] }));
-      return;
-    }
-
-    const urls = data
-      .filter((file) => file.name && !file.name.endsWith("/"))
-      .map((file) =>
-        supabase.storage
-          .from("pictures")
-          .getPublicUrl(`${folderPath}/${file.name}`).data.publicUrl
-      );
-
-    setPhotosMap((prev) => ({
-      ...prev,
-      [familyId]: urls,
-    }));
-  };
 
   // --------------------
   // Fetch families + clients
@@ -103,14 +69,22 @@ export default function FamilyList() {
         f.daughters_ids?.map((id) => ({ id, name: findName(id) })) ?? [],
     }));
 
-    mapped.forEach((f: any) => {
-      if (f.family_photos) {
-        fetchFamilyPhotos(f.id, f.family_photos);
-      }
-    });
-
     setFamilies(mapped);
     setLoading(false);
+  };
+
+  // --------------------
+  // Generate photo URLs (1.png ~ maxPhotos.png)
+  // --------------------
+  const getPhotoUrls = (folder: string | null, maxPhotos = 10) => {
+    if (!folder) return [];
+    const baseUrl = `https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/pictures/${folder}/`;
+    // const baseUrl = `https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/pictures/1/`;      // for testing
+    const urls: string[] = [];
+    for (let i = 1; i <= maxPhotos; i++) {
+      urls.push(`${baseUrl}${i}.png`);
+    }
+    return urls;
   };
 
   // --------------------
@@ -120,7 +94,7 @@ export default function FamilyList() {
 
   return (
     <div className="family-container">
-      <h1 style={{ textAlign: "center" }}>[ Family  Info ]</h1>
+      <h1 style={{ textAlign: "center" }}>[ Family Info ]</h1>
 
       {families.map((f) => (
         <div key={f.id} className="family-card">
@@ -218,33 +192,20 @@ export default function FamilyList() {
             <span className="label">Background</span>
             <span className="bg-text">{f.family_background ?? "❌"}</span>
           </div>
-{/* TESTT---------------------------------------------- */}
-          {f.family_photos && (
-  <div>
-    <h4>Test Photo</h4>
-    <img
-      src={`https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/pictures/${f.family_photos}/1.png`}
-      alt="test"
-      style={{ width: "200px" }}
-    />
-  </div>
-)}
-{/* TESTT---------------------------------------------- */}
+
           {/* 📸 Photos */}
           <div className="family-row">
             <span className="label">Photos</span>
             <div className="photo-grid">
-              {photosMap[f.id] && photosMap[f.id].length > 0 ? (
-                photosMap[f.id].map((url, idx) => (
-                  <div key={idx}>
-                    <img
-                      src={url}
-                      alt="family"
-                      className="family-photo"
-                    />
-                    <p>{url}</p> {/* 화면에 URL도 표시 */}
-                  </div>
-
+              {f.family_photos ? (
+                getPhotoUrls(f.family_photos, 10).map((url, idx) => (
+                  <img
+                    key={idx}
+                    src={url}
+                    alt={`family-${idx + 1}`}
+                    className="family-photo"
+                    onError={(e) => (e.currentTarget.style.display = "none")}
+                  />
                 ))
               ) : (
                 "❌"
