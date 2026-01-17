@@ -40,7 +40,7 @@ const readOnlyFields: (keyof Client)[] = ["id", "family_id"];
 
 const sections: {
   title: string;
-  fields: { key: keyof Client; label: string }[];
+  fields: { key: keyof Client | "counseling_link"; label: string }[];
 }[] = [
   {
     title: "Basic Information",
@@ -95,6 +95,12 @@ const sections: {
       { key: "client_image", label: "Family pictures" },
     ],
   },
+  {
+    title: "Counseling Records",
+    fields: [
+      { key: "counseling_link", label: "Counseling details" },
+    ],
+  },
 ];
 
 export default function ClientDetail() {
@@ -131,46 +137,43 @@ export default function ClientDetail() {
     setClient({ ...client, [field]: value });
   };
 
-const handleSave = async () => {
-  if (!client) return;
+  const handleSave = async () => {
+    if (!client) return;
 
-  const { id, ...data } = client;
+    const { id, ...data } = client;
 
-  // 1. 전송할 데이터 필터링 (DB 컬럼과 일치하는지 확인 필수)
-  const dataToUpdate: any = {};
-  Object.entries(data).forEach(([key, value]) => {
-    // 불필요한 필드(예: 관계형 데이터, 자동생성 컬럼)는 제외하는 로직 추가 권장
-    if (['created_at', 'updated_at'].includes(key)) return; 
+    const dataToUpdate: any = {};
+    Object.entries(data).forEach(([key, value]) => {
+      if (['created_at', 'updated_at'].includes(key)) return; 
 
-    if (value === undefined) dataToUpdate[key] = null;
-    else if (key === "widow" || key === "orphan") dataToUpdate[key] = !!value;
-    else dataToUpdate[key] = value;
-  });
+      if (value === undefined) dataToUpdate[key] = null;
+      else if (key === "widow" || key === "orphan") dataToUpdate[key] = !!value;
+      else dataToUpdate[key] = value;
+    });
 
-  try {
-    console.log("업데이트 시도 ID:", id, "데이터:", dataToUpdate);
+    try {
+      console.log("업데이트 시도 ID:", id, "데이터:", dataToUpdate);
 
-    const { data: responseData, error, status } = await supabase
-      .from("clients")
-      .update(dataToUpdate)
-      .eq("id", Number(id)) // ID 타입이 UUID라면 Number() 제거
-      .select(); // 업데이트된 결과를 반환받아 확인
+      const { data: responseData, error, status } = await supabase
+        .from("clients")
+        .update(dataToUpdate)
+        .eq("id", Number(id))
+        .select();
 
-    if (error) throw error;
+      if (error) throw error;
 
-    // 만약 error는 없는데 responseData가 비어있다면 .eq() 조건이 틀린 것임
-    if (!responseData || responseData.length === 0) {
-      console.warn("업데이트된 행이 없습니다. ID를 확인하세요.");
+      if (!responseData || responseData.length === 0) {
+        console.warn("업데이트된 행이 없습니다. ID를 확인하세요.");
+      }
+
+      alert("Saved successfully!");
+      setEditMode(false);
+      fetchClient();
+    } catch (err: any) {
+      console.error("Update failed detailed:", err);
+      alert(`Update failed: ${err.hint || err.message}`);
     }
-
-    alert("Saved successfully!");
-    setEditMode(false);
-    fetchClient();
-  } catch (err: any) {
-    console.error("Update failed detailed:", err);
-    alert(`Update failed: ${err.hint || err.message}`);
-  }
-};
+  };
 
   if (loading || !client) return <p>Loading ...</p>;
 
@@ -191,8 +194,25 @@ const handleSave = async () => {
           <table className="detail-table">
             <tbody>
               {section.fields.map(({ key, label }) => {
-                const value = client[key];
-                const readOnly = readOnlyFields.includes(key);
+                // 상담 링크 특수 처리
+                if (key === "counseling_link") {
+                  return (
+                    <tr key={key}>
+                      <td className="field-name">{label}</td>
+                      <td className="field-value">
+                        <button
+                          className="primary-btn"
+                          onClick={() => navigate(`/counseling/${client.id}`)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                }
+
+                const value = client[key as keyof Client];
+                const readOnly = readOnlyFields.includes(key as keyof Client);
 
                 return (
                   <tr key={key}>
@@ -204,7 +224,7 @@ const handleSave = async () => {
                             type="checkbox"
                             checked={!!value}
                             onChange={(e) =>
-                              handleChange(key, e.target.checked)
+                              handleChange(key as keyof Client, e.target.checked)
                             }
                           />
                         ) : key === "birth_date" ? (
@@ -212,7 +232,7 @@ const handleSave = async () => {
                             type="date"
                             value={value ?? ""}
                             onChange={(e) =>
-                              handleChange(key, e.target.value)
+                              handleChange(key as keyof Client, e.target.value)
                             }
                           />
                         ) : Array.isArray(value) ? (
@@ -221,7 +241,7 @@ const handleSave = async () => {
                             value={value.join(", ")}
                             onChange={(e) =>
                               handleChange(
-                                key,
+                                key as keyof Client,
                                 e.target.value.split(",").map((v) => v.trim())
                               )
                             }
@@ -231,13 +251,12 @@ const handleSave = async () => {
                             type="text"
                             value={value ?? ""}
                             onChange={(e) =>
-                              handleChange(key, e.target.value)
+                              handleChange(key as keyof Client, e.target.value)
                             }
                           />
                         )
                       ) : key === "family_id" ? (
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          {/* {value ?? "No info"} */}
                           <button
                             className="primary-btn"
                             onClick={() => value && navigate(`/families/${value}`)}

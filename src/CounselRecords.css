@@ -1,0 +1,122 @@
+/* CounselRecords.css */
+
+.counsel-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.counsel-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.counsel-client-info {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.counsel-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.counsel-title {
+  text-align: center;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  font-size: 1.5rem;
+}
+
+.counsel-question-card {
+  margin-bottom: 40px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+}
+
+.counsel-question-header {
+  margin-bottom: 15px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #007bff;
+}
+
+.counsel-question-number {
+  font-size: 0.9rem;
+  color: #007bff;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.counsel-question-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.counsel-answer-container {
+  min-height: 80px;
+}
+
+.counsel-textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.3s;
+}
+
+.counsel-textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.counsel-answer-display {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  min-height: 60px;
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.counsel-answer-display.empty {
+  color: #999;
+}
+
+.counsel-save-container {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.counsel-save-btn {
+  padding: 12px 40px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.counsel-save-btn:hover {
+  background-color: #0056b3;
+}
+
+.counsel-save-btn:active {
+  transform: scale(0.98);
+}
