@@ -121,6 +121,13 @@ export default function FamilyList() {
     <div className="family-container">
       <h1 style={{ textAlign: "center" }}>[ Family Info ]</h1>
 
+      {/* ◀ Go to list 버튼 */}
+      <div style={{ marginBottom: "20px" }}>
+        <button onClick={() => navigate("/")} style={{ padding: "10px 16px" }}>
+          ◀ Go to list
+        </button>
+      </div>
+
       {families.length === 0 ? (
         <p style={{ textAlign: "center" }}>가족 정보가 없습니다.</p>
       ) : (
