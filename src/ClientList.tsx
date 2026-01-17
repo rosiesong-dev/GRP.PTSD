@@ -175,7 +175,7 @@ export default function ClientList() {
         }}
       >
         <button disabled={page === 1 || totalPages === 0} onClick={() => setPage(1)}>≪</button>
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>◀</button>
+        <button disabled={page === 1} onClick={() => setPage(page - 10)}>◀</button>
 
         {getPageNumbers().map((p) => (
           <button
@@ -194,7 +194,7 @@ export default function ClientList() {
           </button>
         ))}
 
-        <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage(page + 1)}>▶</button>
+        <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage(page + 10)}>▶</button>
         <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage(totalPages)}>≫</button>
       </div>
     </div>
