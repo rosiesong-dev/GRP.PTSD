@@ -117,12 +117,13 @@ export default function ClientList() {
           <table width="100%" cellPadding={8}>
             <thead>
               <tr>
-                <th>ID</th>
+                <th>ID</th> 
+                <th></th>
                 <th>Name</th>
                 <th>Birth Date</th>
                 <th>CNIC number</th>
                 <th>Mobile</th>
-                <th>Actions</th>
+                <th>Details</th>
               </tr>
             </thead>
             <tbody>
@@ -135,6 +136,7 @@ export default function ClientList() {
               ) : (
                 clients.map((c) => (
                   <tr key={c.id}>
+                    <th></th>
                     <td style={{ textAlign: "center" }}>{c.id}</td>
                     <td style={{ textAlign: "center" }}>{c.name ?? "No info"}</td>
                     <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
@@ -144,13 +146,14 @@ export default function ClientList() {
                       <button className="primary" onClick={() => navigate(`/clients/${c.id}`)}>
                         View
                       </button>
-                      <button
+                      {/* 삭제 기능 필요하면 주석 제거 */}
+                      {/* <button
                         className="primary"
                         style={{ backgroundColor: "gray", borderColor: "gray" }}
                         onClick={() => handleDelete(c.id)}
                       >
                         Delete
-                      </button>
+                      </button> */}
                     </td>
                   </tr>
                 ))
