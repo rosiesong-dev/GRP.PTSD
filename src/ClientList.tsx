@@ -69,25 +69,37 @@ export default function ClientList() {
     return pages;
   };
 
+  // 이전/다음 10페이지 이동 (범위 제한)
+  const goToPrevGroup = () => {
+    const newPage = Math.max(1, page - PAGE_GROUP_SIZE);
+    setPage(newPage);
+  };
+
+  const goToNextGroup = () => {
+    const newPage = Math.min(totalPages, page + PAGE_GROUP_SIZE);
+    setPage(newPage);
+  };
+
   const handleAddClient = () => {
     navigate("/AddClient");
   };
 
   const handleDelete = async (id: number) => {
-  if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-  try {
-    const { data, error } = await supabase.rpc("update_family_remove_client", { p_client_id: id });
+    try {
+      const { data, error } = await supabase.rpc("update_family_remove_client", { p_client_id: id });
 
-    if (error) throw error;
+      if (error) throw error;
 
-    alert("삭제 완료!");
-    fetchClients(); // 리스트 갱신
-  } catch (err: any) {
-    console.error("삭제 실패", err);
-    alert(`삭제 실패: ${err.message}`);
-  }
-};
+      alert("삭제 완료!");
+      fetchClients(); // 리스트 갱신
+    } catch (err: any) {
+      console.error("삭제 실패", err);
+      alert(`삭제 실패: ${err.message}`);
+    }
+  };
+
   return (
     <div className="container">
       <h1>Clients List</h1>
@@ -118,7 +130,6 @@ export default function ClientList() {
             <thead>
               <tr>
                 <th>ID</th> 
-                <th></th>
                 <th>Name</th>
                 <th>Birth Date</th>
                 <th>CNIC number</th>
@@ -129,14 +140,13 @@ export default function ClientList() {
             <tbody>
               {clients.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: "center" }}>
+                  <td colSpan={7} style={{ textAlign: "center" }}>
                     데이터 없음
                   </td>
                 </tr>
               ) : (
                 clients.map((c) => (
                   <tr key={c.id}>
-                    <th></th>
                     <td style={{ textAlign: "center" }}>{c.id}</td>
                     <td style={{ textAlign: "center" }}>{c.name ?? "No info"}</td>
                     <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
@@ -174,9 +184,23 @@ export default function ClientList() {
           flexWrap: "wrap",
         }}
       >
-        <button disabled={page === 1 || totalPages === 0} onClick={() => setPage(1)}>≪</button>
-        <button disabled={page === 1} onClick={() => setPage(page - 10)}>◀</button>
+        {/* 맨 처음 페이지로 */}
+        <button 
+          disabled={page === 1 || totalPages === 0} 
+          onClick={() => setPage(1)}
+        >
+          ≪
+        </button>
 
+        {/* 이전 10페이지 */}
+        <button 
+          disabled={page <= PAGE_GROUP_SIZE} 
+          onClick={goToPrevGroup}
+        >
+          ◀
+        </button>
+
+        {/* 페이지 번호 */}
         {getPageNumbers().map((p) => (
           <button
             key={p}
@@ -194,8 +218,21 @@ export default function ClientList() {
           </button>
         ))}
 
-        <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage(page + 10)}>▶</button>
-        <button disabled={page === totalPages || totalPages === 0} onClick={() => setPage(totalPages)}>≫</button>
+        {/* 다음 10페이지 */}
+        <button 
+          disabled={page > totalPages - PAGE_GROUP_SIZE} 
+          onClick={goToNextGroup}
+        >
+          ▶
+        </button>
+
+        {/* 맨 마지막 페이지로 */}
+        <button 
+          disabled={page === totalPages || totalPages === 0} 
+          onClick={() => setPage(totalPages)}
+        >
+          ≫
+        </button>
       </div>
     </div>
   );
