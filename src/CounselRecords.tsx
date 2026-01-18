@@ -40,7 +40,6 @@ const questions = [
   { key: "counsel_q10_4", label: "What would you like to say to Muslims in KPP or Pakistan?" },
   { key: "counsel_q10_5", label: "What would you like to say to Pakistan Government?" },
   { key: "counsel_q0", label: "Other things?" },
-  { key: "counsel_q_image", label: "Counsel results" },
 ];
 
 export default function CounselRecords() {
@@ -100,13 +99,22 @@ export default function CounselRecords() {
     }
   };
 
+  // 해당 클라이언트의 사진 URL
+  const getCounselPhotoUrl = () => {
+    if (!counselData || !counselData.counsel_q_image) {
+      console.log("No counsel_q_image:", counselData?.counsel_q_image);
+      return null;
+    }
+    const url = `https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/PeshawarCounselData/${counselData.counsel_q_image}.png`;
+    console.log("Generated URL:", url);
+    return url;
+  };
+
   if (loading || !counselData) return <p>Loading...</p>;
 
   return (
     <div className="counsel-container">
-      <h1 className="counsel-header">
-        [{counselData.id}] {counselData.name}
-      </h1>
+      <h1 className="counsel-header">🔍 Counsel results 🔍</h1>
 
       <div className="counsel-actions">
         <button onClick={() => navigate(`/clients/${id}`)}>
@@ -117,7 +125,7 @@ export default function CounselRecords() {
         </button>
       </div>
 
-      <h2 className="counsel-title">📋 Telling the Truth</h2>
+      <h2 className="counsel-title">[{counselData.id}] {counselData.name}</h2>
 
       {questions.map(({ key, label }, index) => {
         const value = counselData[key as keyof CounselData];
@@ -155,6 +163,30 @@ export default function CounselRecords() {
           </button>
         </div>
       )}
+
+      {/* 📸 Counsel Result Photo */}
+      <div className="counsel-photos-section">
+        <h2 className="counsel-title">Counsel Result Paper</h2>
+        
+
+        <div className="counsel-photos-grid">
+          {getCounselPhotoUrl() ? (
+            <img
+              src={getCounselPhotoUrl()!}
+              alt="counsel-result"
+              className="counsel-photo"
+              onLoad={() => console.log("✅ 사진 로드 성공!")}
+              onError={(e) => {
+                console.error("❌ 사진 로드 실패:", getCounselPhotoUrl());
+                alert("사진을 불러올 수 없습니다: " + getCounselPhotoUrl());
+              }}
+              style={{ border: "3px solid red" }}
+            />
+          ) : (
+            <p className="counsel-no-photos">No photo available</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
