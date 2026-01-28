@@ -21,10 +21,13 @@ type CounselData = {
   counsel_q10_3: string | null;
   counsel_q10_4: string | null;
   counsel_q10_5: string | null;
+  counsel_q11: string | null;
+  counsel_q12: string | null;
   counsel_q_image: string | null;
 };
 
 const questions = [
+  { key: "counsel_q0", label: "Note" },
   { key: "counsel_q1", label: "Name: the victim and family members" },
   { key: "counsel_q2", label: "How many years have you lived in Peshawar? Or how many generations?" },
   { key: "counsel_q3", label: "How much good your relationship with Muslim neighbers?" },
@@ -39,7 +42,8 @@ const questions = [
   { key: "counsel_q10_3", label: "What would you like to say to Christians in the world?" },
   { key: "counsel_q10_4", label: "What would you like to say to Muslims in KPP or Pakistan?" },
   { key: "counsel_q10_5", label: "What would you like to say to Pakistan Government?" },
-  { key: "counsel_q0", label: "Other things?" },
+  { key: "counsel_q11", label: "Other things?" },
+  { key: "counsel_q12", label: "Additional" }
 ];
 
 export default function CounselRecords() {
