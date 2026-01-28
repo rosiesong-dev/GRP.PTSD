@@ -4,6 +4,7 @@ import ClientDetail from "./ClientDetail";
 import FamilyList from "./FamilyList";
 import AddClient from "./AddClient";
 import CounselRecords from "./CounselRecords";
+import CounselRecords2 from "./CounselRecords2";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route path="/families/:id" element={<FamilyList />} />
       <Route path="/AddClient" element={<AddClient />} />
       <Route path="/counseling/:id" element={<CounselRecords />} />
+      <Route path="/counseling2/:id" element={<CounselRecords2 />} />
     </Routes>
   );
 }
