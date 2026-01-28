@@ -40,7 +40,8 @@ export default function ClientList() {
       .order("id", { ascending: true });
 
     if (search.trim() !== "") {
-      query = query.ilike("name", `%${search}%`);
+      // 이름 또는 CNIC 번호로 검색
+      query = query.or(`name.ilike.%${search}%,cnic_number.ilike.%${search}%`);
     }
 
     const { data, error, count } = await query;
@@ -115,8 +116,8 @@ export default function ClientList() {
           onClick={handleLogout}
           style={{
             padding: "8px 16px",
-            backgroundColor: "#E5E7EB",
-            color: "block",
+            backgroundColor: "#dc3545",
+            color: "white",
             border: "none",
             borderRadius: "6px",
             cursor: "pointer",
@@ -131,7 +132,7 @@ export default function ClientList() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
         <input
           type="text"
-          placeholder="Search by name"
+          placeholder="Search by Name / CNIC number"
           value={search}
           onChange={(e) => {
             setPage(1);
