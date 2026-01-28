@@ -34,6 +34,7 @@ type Client = {
   family_id: number | null;
   injured_id: string | null;
   martyr_id: string | null;
+  counsel_q_adult: boolean | null;
 };
 
 const readOnlyFields: (keyof Client)[] = ["id", "family_id"];
@@ -182,7 +183,7 @@ export default function ClientDetail() {
       <h1>[{client.id ?? "Client Detail"}] {client.name ?? "Client Detail"} </h1>
 
       <div className="detail-actions" style={{ display: "flex", justifyContent: "space-between" }}>
-        <button onClick={() => navigate("/")}>◀ Go to list</button>
+        <button onClick={() => navigate(-1)}>◀ Go to list</button>
         <button onClick={() => setEditMode(!editMode)}>
           {editMode ? "Cancel" : "Update"}
         </button>
@@ -196,13 +197,17 @@ export default function ClientDetail() {
               {section.fields.map(({ key, label }) => {
                 // 상담 링크 특수 처리
                 if (key === "counseling_link") {
+                  const counselingPath = client.counsel_q_adult 
+                    ? `/counseling2/${client.id}` 
+                    : `/counseling/${client.id}`;
+                  
                   return (
                     <tr key={key}>
                       <td className="field-name">{label}</td>
                       <td className="field-value">
                         <button
                           className="primary-btn"
-                          onClick={() => navigate(`/counseling/${client.id}`)}
+                          onClick={() => navigate(counselingPath)}
                         >
                           View
                         </button>
