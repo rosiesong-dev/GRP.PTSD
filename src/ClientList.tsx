@@ -100,9 +100,32 @@ export default function ClientList() {
     }
   };
 
+  const handleLogout = () => {
+    if (window.confirm("로그아웃 하시겠습니까?")) {
+      sessionStorage.removeItem("isLoggedIn");
+      navigate("/login");
+    }
+  };
+
   return (
     <div className="container">
-      <h1>Clients List</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <h1>Clients List</h1>
+        <button 
+          onClick={handleLogout}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#E5E7EB",
+            color: "block",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "500"
+          }}
+        >
+          🚪 Logout
+        </button>
+      </div>
 
       {/* 🔍 검색 + ➕ Add 버튼 */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
@@ -130,6 +153,7 @@ export default function ClientList() {
             <thead>
               <tr>
                 <th>ID</th> 
+                <th></th>
                 <th>Name</th>
                 <th>Birth Date</th>
                 <th>CNIC number</th>
@@ -147,6 +171,7 @@ export default function ClientList() {
               ) : (
                 clients.map((c) => (
                   <tr key={c.id}>
+                    <th></th>
                     <td style={{ textAlign: "center" }}>{c.id}</td>
                     <td style={{ textAlign: "center" }}>{c.name ?? "No info"}</td>
                     <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
