@@ -1,20 +1,26 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ClientList from "./ClientList";
 import ClientDetail from "./ClientDetail";
 import FamilyList from "./FamilyList";
 import AddClient from "./AddClient";
 import CounselRecords from "./CounselRecords";
 import CounselRecords2 from "./CounselRecords2";
+import Login from "./login";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<ClientList />} />
-      <Route path="/clients/:id" element={<ClientDetail />} />
-      <Route path="/families/:id" element={<FamilyList />} />
-      <Route path="/AddClient" element={<AddClient />} />
-      <Route path="/counseling/:id" element={<CounselRecords />} />
-      <Route path="/counseling2/:id" element={<CounselRecords2 />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<Login />} />
+      
+      {/* 보호된 라우트 */}
+      <Route path="/clients" element={<ProtectedRoute><ClientList /></ProtectedRoute>} />
+      <Route path="/clients/:id" element={<ProtectedRoute><ClientDetail /></ProtectedRoute>} />
+      <Route path="/families/:id" element={<ProtectedRoute><FamilyList /></ProtectedRoute>} />
+      <Route path="/add-client" element={<ProtectedRoute><AddClient /></ProtectedRoute>} />
+      <Route path="/counseling/:id" element={<ProtectedRoute><CounselRecords /></ProtectedRoute>} />
+      <Route path="/counseling2/:id" element={<ProtectedRoute><CounselRecords2 /></ProtectedRoute>} />
     </Routes>
   );
 }
