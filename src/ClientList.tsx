@@ -116,8 +116,8 @@ export default function ClientList() {
           onClick={handleLogout}
           style={{
             padding: "8px 16px",
-            backgroundColor: "#dc3545",
-            color: "white",
+            backgroundColor: "#E5E7EB",
+            color: "black",
             border: "none",
             borderRadius: "6px",
             cursor: "pointer",
