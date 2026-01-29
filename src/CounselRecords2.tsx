@@ -16,35 +16,34 @@ type CounselData = {
   counsel_q7: string | null;
   counsel_q8: string | null;
   counsel_q9: string | null;
-  counsel_q10_1: string | null;
-  counsel_q10_2: string | null;
-  counsel_q10_3: string | null;
-  counsel_q10_4: string | null;
-  counsel_q10_5: string | null;
+  counsel_q10: string | null;
   counsel_q11: string | null;
   counsel_q12: string | null;
   counsel_q13: string | null;
+  counsel_q14: string | null;
+  counsel_q15: string | null;
+  counsel_q16: string | null;
   counsel_q_image: string | null;
 };
 
 const questions = [
-  { key: "counsel_q0", label: "Note taking" },
-  { key: "counsel_q1", label: "Name: the victim and family members? What has happened to you?" },
-  { key: "counsel_q2", label: "What do you need most? What would you like to do?" },
-  { key: "counsel_q3", label: "Why did the death toll increase gradually?" },
-  { key: "counsel_q4", label: "Who do you think that has done this?" },
-  { key: "counsel_q5", label: "Why do you think that this happened?" },
-  { key: "counsel_q6", label: "Have you forgiven them? if not, what would you like to do?" },
-  { key: "counsel_q7", label: "How many years have you lived in Peshawar? Or how many generations? " },
-  { key: "counsel_q8", label: "How much good your relationship with Muslim neighbors?  1)Excellent  2)Good  3) So and so  4)bad  5)very bad" },
-  { key: "counsel_q9", label: "What would you like to say?" },
-  { key: "counsel_q10_1", label: "What would you like to say? to the world" },
-  { key: "counsel_q10_2", label: "What would you like to say? to Christians in the world" },
-  { key: "counsel_q10_3", label: "What would you like to say? to Muslims in KPP or Pakistan and" },
-  { key: "counsel_q10_4", label: "What would you like to say? to Pakistan Government" },
-  { key: "counsel_q10_5", label: "Other things?" },
-  { key: "counsel_q11", label: "Do you have family worship and prayer everyday regularly?" },
-  { key: "counsel_q13", label: "Note taking"},
+  { key: "counsel_q0", label: "counsel_q0 Note taking" },
+  { key: "counsel_q1", label: "counsel_q1 Name: the victim and family members? What has happened to you?" },
+  { key: "counsel_q2", label: "counsel_q2 What do you need most? What would you like to do?" },
+  { key: "counsel_q3", label: "counsel_q3 Why did the death toll increase gradually?" },
+  { key: "counsel_q4", label: "counsel_q4 Who do you think that has done this?" },
+  { key: "counsel_q5", label: "counsel_q5 Why do you think that this happened?" },
+  { key: "counsel_q6", label: "counsel_q6 Have you forgiven them? if not, what would you like to do?" },
+  { key: "counsel_q7", label: "counsel_q7 How many years have you lived in Peshawar? Or how many generations? " },
+  { key: "counsel_q8", label: "counsel_q8 How much good your relationship with Muslim neighbors?  1)Excellent  2)Good  3) So and so  4)bad  5)very bad" },
+  { key: "counsel_q9", label: "counsel_q9 What would you like to say?" },
+  { key: "counsel_q10", label: "counsel_q10 What would you like to say? to the world" },
+  { key: "counsel_q11", label: "counsel_q11 What would you like to say? to Christians in the world" },
+  { key: "counsel_q12", label: "counsel_q12 What would you like to say? to Muslims in KPP or Pakistan and" },
+  { key: "counsel_q13", label: "counsel_q13 What would you like to say? to Pakistan Government" },
+  { key: "counsel_q14", label: "counsel_q14 Other things?" },
+  { key: "counsel_q15", label: "counsel_q15 Do you have family worship and prayer everyday regularly?" },
+  { key: "counsel_q16", label: "counsel_q16 Note taking"},
   // { key: "counsel_q12", label: "Additional" }
 ];
 
