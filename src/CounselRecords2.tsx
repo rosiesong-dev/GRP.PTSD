@@ -28,24 +28,24 @@ type CounselData = {
 };
 
 const questions = [
-  { key: "counsel_q0", label: "Note" },
-  { key: "counsel_q1", label: "Name: the victim and family members" },
-  { key: "counsel_q2", label: "What has happened to you?" },
-  { key: "counsel_q3", label: "What do you need most?" },
-  { key: "counsel_q4", label: "What would you like to do?" },
-  { key: "counsel_q5", label: "Why did the death toll increase gradually?" },
-  { key: "counsel_q6", label: "Who do you think that has done this?" },
-  { key: "counsel_q7", label: "Why do you think that this happened?" },
-  { key: "counsel_q8", label: "Have you forgiven them? if not, what would you like to do?" },
-  { key: "counsel_q9", label: "How many years have you lived in Peshawar? Or how many generations? " },
-  { key: "counsel_q10_1", label: "How much good your relationship with Muslim neighbors?  1)Excellent  2)Good  3) So and so  4)bad  5)very bad" },
-  { key: "counsel_q10_2", label: "What would you like to say? to the world" },
-  { key: "counsel_q10_3", label: "What would you like to say? to Christians in the world" },
-  { key: "counsel_q10_4", label: "What would you like to say? to Muslims in KPP or Pakistan and" },
-  { key: "counsel_q10_5", label: "What would you like to say? to Pakistan Government" },
-  { key: "counsel_q11", label: "Other things?" },
-  { key: "counsel_q13", label: "Do you have family worship and prayer everyday regularly?"},
-  { key: "counsel_q12", label: "Additional" }
+  { key: "counsel_q0", label: "Note taking" },
+  { key: "counsel_q1", label: "Name: the victim and family members? What has happened to you?" },
+  { key: "counsel_q2", label: "What do you need most? What would you like to do?" },
+  { key: "counsel_q3", label: "Why did the death toll increase gradually?" },
+  { key: "counsel_q4", label: "Who do you think that has done this?" },
+  { key: "counsel_q5", label: "Why do you think that this happened?" },
+  { key: "counsel_q6", label: "Have you forgiven them? if not, what would you like to do?" },
+  { key: "counsel_q7", label: "How many years have you lived in Peshawar? Or how many generations? " },
+  { key: "counsel_q8", label: "How much good your relationship with Muslim neighbors?  1)Excellent  2)Good  3) So and so  4)bad  5)very bad" },
+  { key: "counsel_q9", label: "What would you like to say?" },
+  { key: "counsel_q10_1", label: "What would you like to say? to the world" },
+  { key: "counsel_q10_2", label: "What would you like to say? to Christians in the world" },
+  { key: "counsel_q10_3", label: "What would you like to say? to Muslims in KPP or Pakistan and" },
+  { key: "counsel_q10_4", label: "What would you like to say? to Pakistan Government" },
+  { key: "counsel_q10_5", label: "Other things?" },
+  { key: "counsel_q11", label: "Do you have family worship and prayer everyday regularly?" },
+  { key: "counsel_q13", label: "Note taking"},
+  // { key: "counsel_q12", label: "Additional" }
 ];
 
 export default function CounselRecords() {
