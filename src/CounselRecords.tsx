@@ -16,13 +16,14 @@ type CounselData = {
   counsel_q7: string | null;
   counsel_q8: string | null;
   counsel_q9: string | null;
-  counsel_q10_1: string | null;
-  counsel_q10_2: string | null;
-  counsel_q10_3: string | null;
-  counsel_q10_4: string | null;
-  counsel_q10_5: string | null;
+  counsel_q10: string | null;
   counsel_q11: string | null;
   counsel_q12: string | null;
+  counsel_q13: string | null;
+  counsel_q14: string | null;
+  counsel_q15: string | null;
+  counsel_q16: string | null;
+  counsel_q17: string | null;
   counsel_q_image: string | null;
 };
 
