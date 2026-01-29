@@ -37,13 +37,14 @@ const questions = [
   { key: "counsel_q7", label: "Have you forgiven them?" },
   { key: "counsel_q8", label: "If not, what would you like to do?" },
   { key: "counsel_q9", label: "What do you need most?" },
-  { key: "counsel_q10", label: "What would you like to say to All Saints Church?" },
-  { key: "counsel_q11", label: "What would you like to say to Peshawar Diocese?" },
-  { key: "counsel_q12", label: "What would you like to say to Christians in the world?" },
-  { key: "counsel_q13", label: "What would you like to say to Muslims in KPP or Pakistan?" },
-  { key: "counsel_q14", label: "What would you like to say to Pakistan Government?" },
-  { key: "counsel_q15", label: "Other things?" },
-  { key: "counsel_q16", label: "Additional" }
+  { key: "counsel_q10", label: "What would you like to say?" },
+  { key: "counsel_q11", label: "What would you like to say to All Saints Church?" },
+  { key: "counsel_q12", label: "What would you like to say to Peshawar Diocese?" },
+  { key: "counsel_q13", label: "What would you like to say to Christians in the world?" },
+  { key: "counsel_q14", label: "What would you like to say to Muslims in KPP or Pakistan?" },
+  { key: "counsel_q15", label: "What would you like to say to Pakistan Government?" },
+  { key: "counsel_q16", label: "Other things?" },
+  { key: "counsel_q17", label: "Note taking" }
 ];
 
 export default function CounselRecords() {
