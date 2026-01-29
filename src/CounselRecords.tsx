@@ -137,7 +137,7 @@ export default function CounselRecords() {
         return (
           <div key={key} className="counsel-question-card">
             <div className="counsel-question-header">
-              <span className="counsel-question-number">Q{index + 1}</span>
+              <span className="counsel-question-number">Q{index}</span>
               <span className="counsel-question-text">{label}</span>
             </div>
 
