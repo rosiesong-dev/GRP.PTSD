@@ -40,7 +40,7 @@ export default function Login() {
       // 로그인 상태 저장
       sessionStorage.setItem("isLoggedIn", "true");
       
-      alert("Login successful!");
+      // alert("Login successful!");
       console.log("Navigating to /clients");
       navigate("/clients", { replace: true });
     } catch (err: any) {
