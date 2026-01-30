@@ -35,13 +35,15 @@ type Client = {
   injured_id: string | null;
   martyr_id: string | null;
   counsel_q_adult: boolean | null;
+  job_study_situation_need: string | null;
+  care_giver: string | null;
 };
 
 const readOnlyFields: (keyof Client)[] = ["id", "family_id"];
 
 const sections: {
   title: string;
-  fields: { key: keyof Client | "counseling_link"; label: string }[];
+  fields: { key: keyof Client | "counseling_link" | "pcl_link"; label: string }[];
 }[] = [
   {
     title: "Basic Information",
@@ -49,12 +51,15 @@ const sections: {
       { key: "name", label: "Name" },
       { key: "profile_image", label: "Profile (사진)" },
       { key: "status", label: "Status" },
+      { key: "job_study_situation_need", label: "Job/Study/Situation/Needs" },
       { key: "birth_date", label: "Birthday" },
       { key: "age", label: "Age" },
       { key: "gender", label: "Gender" },
+      { key: "care_giver", label: "Care giver" },
       { key: "cnic_number", label: "CNIC number" },
       { key: "injured_id", label: "Injured number" },
       { key: "martyr_id", label: "Martyred number" },
+
     ],
   },
   {
@@ -93,13 +98,19 @@ const sections: {
     title: "Family Information",
     fields: [
       { key: "family_id", label: "Family info" },
-      { key: "client_image", label: "Family pictures" },
+      // { key: "client_image", label: "Family pictures" },
     ],
   },
   {
     title: "Counseling Records",
     fields: [
       { key: "counseling_link", label: "Counseling details" },
+    ],
+  },
+  {
+    title: "PCL",
+    fields: [
+      { key: "pcl_link", label: "PCL details" },
     ],
   },
 ];
@@ -183,7 +194,7 @@ export default function ClientDetail() {
       <h1>[{client.id ?? "Client Detail"}] {client.name ?? "Client Detail"} </h1>
 
       <div className="detail-actions" style={{ display: "flex", justifyContent: "space-between" }}>
-        <button onClick={() => navigate("/clients")}>◀ Go to list</button>
+        <button onClick={() => navigate(-1)}>◀ Go to list</button>
         <button onClick={() => setEditMode(!editMode)}>
           {editMode ? "Cancel" : "Update"}
         </button>
@@ -208,6 +219,40 @@ export default function ClientDetail() {
                         <button
                           className="primary-btn"
                           onClick={() => navigate(counselingPath)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                }
+
+                // PCL 링크 특수 처리
+                if (key === "pcl_link") {
+                  return (
+                    <tr key={key}>
+                      <td className="field-name">{label}</td>
+                      <td className="field-value">
+                        <button
+                          className="primary-btn"
+                          onClick={() => navigate(`/pcl/${client.id}`)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                }
+
+                // PCL 링크 특수 처리
+                if (key === "pcl_link") {
+                  return (
+                    <tr key={key}>
+                      <td className="field-name">{label}</td>
+                      <td className="field-value">
+                        <button
+                          className="primary-btn"
+                          onClick={() => navigate(`/pcl/${client.id}`)}
                         >
                           View
                         </button>
@@ -274,7 +319,7 @@ export default function ClientDetail() {
                       ) : Array.isArray(value) ? (
                         value.join(", ") || "No info"
                       ) : value === null || value === "" ? (
-                        "No info"
+                        ""
                       ) : (
                         value.toString()
                       )}
