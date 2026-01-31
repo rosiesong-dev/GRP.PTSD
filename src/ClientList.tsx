@@ -85,21 +85,23 @@ export default function ClientList() {
     navigate("/AddClient");
   };
 
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-    try {
-      const { data, error } = await supabase.rpc("update_family_remove_client", { p_client_id: id });
+  // delete 기능 필요하면 주석 제거
+  // const handleDelete = async (id: number) => {
+  //   if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-      if (error) throw error;
+  //   try {
+  //     const { data, error } = await supabase.rpc("update_family_remove_client", { p_client_id: id });
 
-      alert("삭제 완료!");
-      fetchClients(); // 리스트 갱신
-    } catch (err: any) {
-      console.error("삭제 실패", err);
-      alert(`삭제 실패: ${err.message}`);
-    }
-  };
+  //     if (error) throw error;
+
+  //     alert("삭제 완료!");
+  //     fetchClients(); // 리스트 갱신
+  //   } catch (err: any) {
+  //     console.error("삭제 실패", err);
+  //     alert(`삭제 실패: ${err.message}`);
+  //   }
+  // };
 
   const handleLogout = () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {

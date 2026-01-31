@@ -182,7 +182,7 @@ export default function CounselRecords() {
               alt="counsel-result"
               className="counsel-photo"
               onLoad={() => console.log("✅ 사진 로드 성공!")}
-              onError={(e) => {
+              onError={(_e) => {
                 console.error("❌ 사진 로드 실패:", getCounselPhotoUrl());
                 alert("사진을 불러올 수 없습니다: " + getCounselPhotoUrl());
               }}

@@ -166,7 +166,7 @@ export default function ClientDetail() {
     try {
       console.log("업데이트 시도 ID:", id, "데이터:", dataToUpdate);
 
-      const { data: responseData, error, status } = await supabase
+      const { data: responseData, error } = await supabase
         .from("clients")
         .update(dataToUpdate)
         .eq("id", Number(id))
@@ -263,7 +263,7 @@ export default function ClientDetail() {
                         ) : key === "birth_date" ? (
                           <input
                             type="date"
-                            value={value ?? ""}
+                            value={typeof value === "boolean" ? "" : value ?? ""}
                             onChange={(e) =>
                               handleChange(key as keyof Client, e.target.value)
                             }
@@ -282,7 +282,7 @@ export default function ClientDetail() {
                         ) : (
                           <input
                             type="text"
-                            value={value ?? ""}
+                            value={typeof value === "boolean" ? "" : value ?? ""} 
                             onChange={(e) =>
                               handleChange(key as keyof Client, e.target.value)
                             }
