@@ -5,8 +5,10 @@ import FamilyList from "./FamilyList";
 import AddClient from "./AddClient";
 import CounselRecords from "./CounselRecords";
 import CounselRecords2 from "./CounselRecords2";
-import Login from "./login";
+import Login from "./Login";
 import ProtectedRoute from "./ProtectedRoute";
+import PclAdult from "./PclAdult";
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
       <Route path="/add-client" element={<ProtectedRoute><AddClient /></ProtectedRoute>} />
       <Route path="/counseling/:id" element={<ProtectedRoute><CounselRecords /></ProtectedRoute>} />
       <Route path="/counseling2/:id" element={<ProtectedRoute><CounselRecords2 /></ProtectedRoute>} />
+      <Route path="/pcl/:id" element={<ProtectedRoute><PclAdult /></ProtectedRoute>} />
     </Routes>
   );
 }
