@@ -156,7 +156,6 @@ export default function ClientList() {
             <thead>
               <tr>
                 <th>ID</th> 
-                <th></th>
                 <th>Name</th>
                 <th>Birth Date</th>
                 <th>CNIC number</th>
@@ -174,7 +173,6 @@ export default function ClientList() {
               ) : (
                 clients.map((c) => (
                   <tr key={c.id}>
-                    <th></th>
                     <td style={{ textAlign: "center" }}>{c.id}</td>
                     <td style={{ textAlign: "center" }}>{c.name ?? "No info"}</td>
                     <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
