@@ -1,0 +1,201 @@
+/* PclAdult.css */
+
+.pcl-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.pcl-header {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.pcl-client-info {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.pcl-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.pcl-actions button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: white;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.pcl-actions button:hover {
+  background-color: #f0f0f0;
+}
+
+.pcl-instructions {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border-left: 4px solid #007bff;
+}
+
+.pcl-instructions p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.pcl-section {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  border: 1px solid #e0e0e0;
+}
+
+.pcl-section h2 {
+  color: #007bff;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.pcl-field {
+  margin-bottom: 20px;
+}
+
+.pcl-field label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.pcl-field input,
+.pcl-field textarea,
+.pcl-field select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.pcl-field input:focus,
+.pcl-field textarea:focus,
+.pcl-field select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.pcl-field p {
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  margin: 0;
+}
+
+.pcl-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.pcl-question-item {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #007bff;
+}
+
+.pcl-question-text {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.pcl-question-num {
+  font-weight: bold;
+  color: #007bff;
+  margin-right: 8px;
+}
+
+.pcl-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pcl-radio {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pcl-radio:hover {
+  background-color: #e9ecef;
+}
+
+.pcl-radio input[type="radio"] {
+  margin-right: 10px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.pcl-radio input[type="radio"]:disabled {
+  cursor: not-allowed;
+}
+
+.pcl-radio-label {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.pcl-total {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #e7f3ff;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #007bff;
+  border: 2px solid #007bff;
+}
+
+.pcl-save-container {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.pcl-save-btn {
+  padding: 14px 40px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pcl-save-btn:hover {
+  background-color: #0056b3;
+}
+
+.pcl-save-btn:active {
+  transform: scale(0.98);
+}
