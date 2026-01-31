@@ -194,7 +194,7 @@ export default function ClientDetail() {
       <h1>[{client.id ?? "Client Detail"}] {client.name ?? "Client Detail"} </h1>
 
       <div className="detail-actions" style={{ display: "flex", justifyContent: "space-between" }}>
-        <button onClick={() => navigate(-1)}>◀ Go to list</button>
+        <button onClick={() => navigate("/clients")}>◀ Go to list</button>
         <button onClick={() => setEditMode(!editMode)}>
           {editMode ? "Cancel" : "Update"}
         </button>
