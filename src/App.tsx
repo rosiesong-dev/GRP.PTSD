@@ -24,7 +24,7 @@ function App() {
       <Route path="/add-client" element={<ProtectedRoute><AddClient /></ProtectedRoute>} />
       <Route path="/counseling/:id" element={<ProtectedRoute><CounselRecords /></ProtectedRoute>} />
       <Route path="/counseling2/:id" element={<ProtectedRoute><CounselRecords2 /></ProtectedRoute>} />
-      <Route path="/pcl/:id" element={<ProtectedRoute><PclAdult /></ProtectedRoute>} /> 
+      <Route path="/pcl-adult/:id" element={<ProtectedRoute><PclAdult /></ProtectedRoute>} /> 
       <Route path="/pcl-child/:id" element={<ProtectedRoute><PclChild /></ProtectedRoute>} />
     </Routes>
   );
