@@ -235,24 +235,7 @@ export default function ClientDetail() {
                       <td className="field-value">
                         <button
                           className="primary-btn"
-                          onClick={() => navigate(`/pcl/${client.id}`)}
-                        >
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                }
-
-                // PCL 링크 특수 처리
-                if (key === "pcl_link") {
-                  return (
-                    <tr key={key}>
-                      <td className="field-name">{label}</td>
-                      <td className="field-value">
-                        <button
-                          className="primary-btn"
-                          onClick={() => navigate(`/pcl/${client.id}`)}
+                          onClick={() => navigate(`/pcl-adult/${client.id}`)}
                         >
                           View
                         </button>
