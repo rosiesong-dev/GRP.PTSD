@@ -130,18 +130,35 @@ export default function ClientDetail() {
 
   const fetchClient = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    
+    // 1. client 데이터 가져오기
+    const { data: clientData, error: clientError } = await supabase
       .from("clients")
       .select("*")
       .eq("id", Number(id))
       .single();
 
-    if (error) {
-      console.error(error);
+    if (clientError) {
+      console.error(clientError);
       alert("Failed to load client data");
-    } else {
-      setClient(data);
+      setLoading(false);
+      return;
     }
+
+    // 2. counsels 테이블에서 is_adult 값 가져오기
+    const { data: counselData, error: counselError } = await supabase
+      .from("counsels")
+      .select("is_adult")
+      .eq("client_id", Number(id))
+      .maybeSingle(); // single 대신 maybeSingle 사용 (데이터가 없어도 에러 안남)
+
+    // 3. 두 데이터 합치기
+    const finalData = {
+      ...clientData,
+      is_adult_counsel: counselData?.is_adult ?? null
+    };
+
+    setClient(finalData);
     setLoading(false);
   };
 
@@ -153,7 +170,7 @@ export default function ClientDetail() {
   const handleSave = async () => {
     if (!client) return;
 
-    const { id, ...data } = client;
+    const { id, is_adult_counsel, ...data } = client;
 
     const dataToUpdate: any = {};
     Object.entries(data).forEach(([key, value]) => {
@@ -228,7 +245,7 @@ export default function ClientDetail() {
                   );
                 }
 
-                // 상담 링크 특수 처리
+                // PCL 링크 특수 처리
                 if (key === "pcl_link") {
                   const pclPath = client.is_adult_counsel
                     ? `/pcl-adult/${client.id}` 
