@@ -146,7 +146,7 @@ export default function ClientDetail() {
     }
 
     // 2. counsels 테이블에서 is_adult 값 가져오기
-    const { data: counselData, error: counselError } = await supabase
+    const { data: counselData } = await supabase
       .from("counsels")
       .select("is_adult")
       .eq("client_id", Number(id))
