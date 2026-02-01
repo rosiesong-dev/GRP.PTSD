@@ -123,7 +123,7 @@ export default function FamilyList() {
 
       {/* ◀ Go to list 버튼 */}
       <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => navigate("/")} style={{ padding: "10px 16px" }}>
+        <button onClick={() => navigate("/clients")} style={{ padding: "10px 16px" }}>
           ◀ Go to list
         </button>
       </div>
