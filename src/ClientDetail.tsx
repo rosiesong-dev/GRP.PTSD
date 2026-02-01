@@ -37,6 +37,7 @@ type Client = {
   counsel_q_adult: boolean | null;
   job_study_situation_need: string | null;
   care_giver: string | null;
+  is_adult_counsel: boolean | null;
 };
 
 const readOnlyFields: (keyof Client)[] = ["id", "family_id"];
@@ -227,15 +228,19 @@ export default function ClientDetail() {
                   );
                 }
 
-                // PCL 링크 특수 처리
+                // 상담 링크 특수 처리
                 if (key === "pcl_link") {
+                  const pclPath = client.is_adult_counsel
+                    ? `/pcl-adult/${client.id}` 
+                    : `/pcl-child/${client.id}`;
+                  
                   return (
                     <tr key={key}>
                       <td className="field-name">{label}</td>
                       <td className="field-value">
                         <button
                           className="primary-btn"
-                          onClick={() => navigate(`/pcl-adult/${client.id}`)}
+                          onClick={() => navigate(pclPath)}
                         >
                           View
                         </button>
@@ -292,7 +297,7 @@ export default function ClientDetail() {
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                           <button
                             className="primary-btn"
-                            onClick={() => value && navigate(`/families/${value}`)}
+                            onClick={() => navigate(`/families/${value ?? ""}`)}
                           >
                             View
                           </button>

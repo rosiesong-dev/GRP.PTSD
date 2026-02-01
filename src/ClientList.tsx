@@ -82,7 +82,7 @@ export default function ClientList() {
   };
 
   const handleAddClient = () => {
-    navigate("/AddClient");
+    navigate("/add-client");
   };
 
 
