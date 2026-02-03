@@ -54,3 +54,11 @@
   line-height: 1.4;
   color: #444;
 }
+
+/* family_background 줄바꿈 및 스타일 처리 */
+.bg-text {
+  white-space: pre-wrap;    /* 수파베이스의 \n 문자를 줄바꿈으로 인식 */
+  word-break: break-all;   /* 가로 폭을 넘칠 경우 단어 단위로 끊어줌 */
+  display: inline-block;   /* 필요 시 레이아웃 정렬을 위해 추가 */
+  line-height: 1.5;        /* 가독성을 위해 줄 간격 확보 */
+}
