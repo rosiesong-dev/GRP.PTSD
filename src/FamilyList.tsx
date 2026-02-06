@@ -155,15 +155,15 @@ export default function FamilyList() {
 
 
   // Generate photo URLs (1.png ~ maxPhotos.png)
-  const getPhotoUrls = (folder: string | null, maxPhotos = 20) => {
-    if (!folder) return [];
-    const baseUrl = `https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/pictures/${folder}/`;
-    const urls: string[] = [];
-    for (let i = 1; i <= maxPhotos; i++) {
-      urls.push(`${baseUrl}${i}.png`);
-    }
-    return urls;
-  };
+  // const getPhotoUrls = (folder: string | null, maxPhotos = 20) => {
+  //   if (!folder) return [];
+  //   const baseUrl = `https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/pictures/${folder}/`;
+  //   const urls: string[] = [];
+  //   for (let i = 1; i <= maxPhotos; i++) {
+  //     urls.push(`${baseUrl}${i}.png`);
+  //   }
+  //   return urls;
+  // };
 
   // 텍스트와 [photoN] 태그를 파싱하여 렌더링하는 함수
   const parseAndRenderContent = (text: string | null, photoFolder: string | null) => {
