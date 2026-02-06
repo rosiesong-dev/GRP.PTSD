@@ -27,7 +27,8 @@
 
 /* 버튼 묶음 */
 .inline-group {
-  display: inline-flex;   /* ⭐ 절대 block 아님 */
+  display: inline-flex;
+  /* ⭐ 절대 block 아님 */
   flex-wrap: wrap;
   gap: 6px;
 }
@@ -42,7 +43,8 @@
   color: white;
   border: none;
   cursor: pointer;
-  width: fit-content;     /* ⭐ 가로 늘어남 방지 */
+  width: fit-content;
+  /* ⭐ 가로 늘어남 방지 */
   white-space: nowrap;
 }
 
@@ -50,15 +52,81 @@
   background: #3b55d9;
 }
 
-.bg-text {
-  line-height: 1.4;
+/* Interleaved Content Styles */
+.bg-text-part {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.6;
   color: #444;
+  margin-bottom: 10px;
 }
 
-/* family_background 줄바꿈 및 스타일 처리 */
-.bg-text {
-  white-space: pre-wrap;    /* 수파베이스의 \n 문자를 줄바꿈으로 인식 */
-  word-break: break-all;   /* 가로 폭을 넘칠 경우 단어 단위로 끊어줌 */
-  display: inline-block;   /* 필요 시 레이아웃 정렬을 위해 추가 */
-  line-height: 1.5;        /* 가독성을 위해 줄 간격 확보 */
+.interleaved-photo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.interleaved-photo {
+  max-width: 100%;
+  max-height: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
+}
+
+/* Edit Mode Styles */
+.edit-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.save-btn {
+  background-color: #10b981;
+  /* Green */
+}
+
+.save-btn:hover {
+  background-color: #059669;
+}
+
+.cancel-btn {
+  background-color: #6b7280;
+  /* Gray */
+}
+
+.cancel-btn:hover {
+  background-color: #4b5563;
+}
+
+.help-text {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+code {
+  background: #f3f4f6;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
 }
