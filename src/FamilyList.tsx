@@ -199,13 +199,11 @@ export default function FamilyList() {
       }
 
       // 텍스트인 경우 줄바꿈 처리하여 렌더링
-      // 빈 문자열이거나 공백만 있는 경우 렌더링 안 함 (선택사항, 여기선 일단 렌더링)
       if (part === "") return null;
 
-      // 리터럴 \n 처리 및 실제 줄바꿈
       return (
-        <div key={index} className="bg-text-part">
-          {part.split("\\n").join("\n")}
+        <div key={index} className="bg-text-part" style={{ whiteSpace: 'pre-wrap' }}>
+          {part}
         </div>
       );
     });
