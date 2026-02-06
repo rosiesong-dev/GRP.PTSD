@@ -155,15 +155,15 @@ export default function FamilyList() {
 
 
   // Generate photo URLs (1.png ~ maxPhotos.png)
-  // const getPhotoUrls = (folder: string | null, maxPhotos = 20) => {
-  //   if (!folder) return [];
-  //   const baseUrl = `https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/pictures/${folder}/`;
-  //   const urls: string[] = [];
-  //   for (let i = 1; i <= maxPhotos; i++) {
-  //     urls.push(`${baseUrl}${i}.png`);
-  //   }
-  //   return urls;
-  // };
+  const getPhotoUrls = (folder: string | null, maxPhotos = 20) => {
+    if (!folder) return [];
+    const baseUrl = `https://uihlvzejcglditmlqzuq.supabase.co/storage/v1/object/public/pictures/${folder}/`;
+    const urls: string[] = [];
+    for (let i = 1; i <= maxPhotos; i++) {
+      urls.push(`${baseUrl}${i}.png`);
+    }
+    return urls;
+  };
 
   // 텍스트와 [photoN] 태그를 파싱하여 렌더링하는 함수
   const parseAndRenderContent = (text: string | null, photoFolder: string | null) => {
@@ -370,18 +370,21 @@ export default function FamilyList() {
               </div>
             </div>
 
-            {/* 📸 Photos - 이제 본문에 포함되므로 별도로 표시하지 않거나,
-                본문에 포함되지 않은 남은 사진만 표시할 수도 있음.
-                일단은 사용자 요청대로 "본문에 섞여 나오도록" 했으므로 하단 갤러리는 주석 처리하거나 제거.
-                필요하다면 옵션으로 남겨둘 수 있음. */}
-            {/* 
+            {/* 📸 Photos - 모든 사진을 갤러리로 표시 */}
             <div className="family-row">
               <span className="label">Photos</span>
               <div className="photo-grid">
-                ...
+                {getPhotoUrls(f.family_photos, 20).map((url, idx) => (
+                  <img
+                    key={idx}
+                    src={url}
+                    alt={`family-${idx + 1}`}
+                    className="photo-item"
+                    onError={(e) => (e.currentTarget.style.display = "none")}
+                  />
+                ))}
               </div>
-            </div> 
-            */}
+            </div>
           </div>
         ))
       )}
