@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "./lib/supabase";
 import "./FamilyList.css";
@@ -31,10 +31,30 @@ export default function FamilyList() {
   const [families, setFamilies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Edit Mode States
+  // Edit Mode States (for family_background)
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editBackground, setEditBackground] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
+
+  // Update Mode States (for family members)
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [editIds, setEditIds] = useState<{
+    [key: number]: {
+      fathers_id: string;
+      mothers_id: string;
+      sons_ids: string;
+      daughters_ids: string;
+      gr_fathers_id: string;
+      gr_mothers_id: string;
+    };
+  }>({});
+  const [isSavingFamily, setIsSavingFamily] = useState(false);
+
+  // Image upload states
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     console.log("===== DEBUG =====");
@@ -103,6 +123,173 @@ export default function FamilyList() {
       alert(`예상치 못한 에러: ${err}`);
       setFamilies([]);
       setLoading(false);
+    }
+  };
+
+  const startFamilyUpdate = () => {
+    const idMap: {
+      [key: number]: {
+        fathers_id: string;
+        mothers_id: string;
+        sons_ids: string;
+        daughters_ids: string;
+        gr_fathers_id: string;
+        gr_mothers_id: string;
+      };
+    } = {};
+    families.forEach((f) => {
+      idMap[f.id] = {
+        fathers_id: f.fathers_id?.toString() ?? "",
+        mothers_id: f.mothers_id?.toString() ?? "",
+        sons_ids: f.sons_ids?.join(", ") ?? "",
+        daughters_ids: f.daughters_ids?.join(", ") ?? "",
+        gr_fathers_id: f.gr_fathers_id?.toString() ?? "",
+        gr_mothers_id: f.gr_mothers_id?.toString() ?? "",
+      };
+    });
+    setEditIds(idMap);
+    setIsUpdateMode(true);
+  };
+
+  const handleEditIdChange = (
+    familyId: number,
+    field: string,
+    value: string
+  ) => {
+    setEditIds((prev) => ({
+      ...prev,
+      [familyId]: { ...prev[familyId], [field]: value },
+    }));
+  };
+
+  const saveFamilyMembers = async () => {
+    setIsSavingFamily(true);
+    try {
+      for (const f of families) {
+        const ids = editIds[f.id];
+        if (!ids) continue;
+
+        const parsedSons = ids.sons_ids
+          ? ids.sons_ids
+              .split(",")
+              .map((s) => parseInt(s.trim()))
+              .filter((n) => !isNaN(n))
+          : [];
+        const parsedDaughters = ids.daughters_ids
+          ? ids.daughters_ids
+              .split(",")
+              .map((s) => parseInt(s.trim()))
+              .filter((n) => !isNaN(n))
+          : [];
+
+        const updateData = {
+          fathers_id: ids.fathers_id ? parseInt(ids.fathers_id) : null,
+          mothers_id: ids.mothers_id ? parseInt(ids.mothers_id) : null,
+          sons_ids: parsedSons.length ? parsedSons : null,
+          daughters_ids: parsedDaughters.length ? parsedDaughters : null,
+          gr_fathers_id: ids.gr_fathers_id ? parseInt(ids.gr_fathers_id) : null,
+          gr_mothers_id: ids.gr_mothers_id ? parseInt(ids.gr_mothers_id) : null,
+        };
+
+        const { error } = await supabase
+          .from("family")
+          .update(updateData)
+          .eq("id", f.id);
+
+        if (error) throw error;
+      }
+      alert("저장되었습니다.");
+      setIsUpdateMode(false);
+      fetchFamilies();
+    } catch (err: any) {
+      alert(`저장 실패: ${err.message}`);
+    } finally {
+      setIsSavingFamily(false);
+    }
+  };
+
+  // 이미지 업로드: Storage에 {nextNum}.png 로 저장, 필요 시 폴더 자동 생성
+  const uploadImage = async (familyId: number, file: File): Promise<number> => {
+    const family = families.find((f) => f.id === familyId);
+    if (!family) throw new Error("Family not found");
+
+    let folderPath: string = family.family_photos ?? `family_${familyId}`;
+    const isNewFolder = !family.family_photos;
+
+    // 폴더 내 기존 파일 목록 조회 → 다음 번호 계산
+    // 신규 폴더는 아직 존재하지 않으므로 list() 에러가 나도 1부터 시작
+    const { data: existingFiles, error: listError } = await supabase.storage
+      .from("pictures")
+      .list(folderPath);
+
+    if (listError && !isNewFolder) throw listError;
+
+    const existingNums = (existingFiles ?? [])
+      .map((f) => parseInt(f.name.replace(".png", "")))
+      .filter((n) => !isNaN(n));
+    const nextNum = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
+
+    // Storage 업로드 (원본 포맷 유지, 파일명만 {nextNum}.png)
+    const { error: uploadError } = await supabase.storage
+      .from("pictures")
+      .upload(`${folderPath}/${nextNum}.png`, file, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (uploadError) throw uploadError;
+
+    // 신규 폴더인 경우 DB family_photos 컬럼 업데이트
+    if (isNewFolder) {
+      const { error: dbError } = await supabase
+        .from("family")
+        .update({ family_photos: folderPath })
+        .eq("id", familyId);
+
+      if (dbError) throw dbError;
+
+      setFamilies((prev) =>
+        prev.map((f) =>
+          f.id === familyId ? { ...f, family_photos: folderPath } : f
+        )
+      );
+    }
+
+    return nextNum;
+  };
+
+  // textarea 커서 위치에 태그 삽입
+  const insertTagAtCursor = (tag: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      setEditBackground((prev) => prev + tag);
+      return;
+    }
+    // DOM에서 직접 커서 위치 읽기 (항상 최신 값)
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    // functional form으로 최신 editBackground 사용 → stale closure 방지
+    setEditBackground((prev) => prev.substring(0, start) + tag + prev.substring(end));
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + tag.length, start + tag.length);
+    }, 0);
+  };
+
+  // 파일 처리 공통 함수 (버튼 클릭 / 드래그 앤 드롭 공유)
+  const handleImageFile = async (familyId: number, file: File) => {
+    if (!file.type.startsWith("image/")) {
+      alert("이미지 파일만 업로드할 수 있습니다.");
+      return;
+    }
+    setIsUploading(true);
+    try {
+      const photoNum = await uploadImage(familyId, file);
+      insertTagAtCursor(`[photo${photoNum}]`);
+    } catch (err: any) {
+      alert(`이미지 업로드 실패: ${err.message}`);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -217,11 +404,31 @@ export default function FamilyList() {
     <div className="family-container">
       <h1 style={{ textAlign: "center" }}>[ Family Info ]</h1>
 
-      {/* ◀ Go to list 버튼 */}
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => navigate("/clients")} style={{ padding: "10px 16px" }}>
+      {/* 상단 액션 버튼 */}
+      <div className="family-actions">
+        <button className="family-action-btn" onClick={() => navigate("/clients")}>
           ◀ Go to list
         </button>
+        <div className="family-actions-right">
+          <button
+            className="family-action-btn"
+            onClick={() => {
+              if (isUpdateMode) setIsUpdateMode(false);
+              else startFamilyUpdate();
+            }}
+          >
+            {isUpdateMode ? "Cancel" : "Update"}
+          </button>
+          {isUpdateMode && (
+            <button
+              className="family-action-btn family-save-action-btn"
+              onClick={saveFamilyMembers}
+              disabled={isSavingFamily}
+            >
+              {isSavingFamily ? "Saving..." : "Save"}
+            </button>
+          )}
+        </div>
       </div>
 
       {families.length === 0 ? (
@@ -231,7 +438,20 @@ export default function FamilyList() {
           <div key={f.id} className="family-card">
             <div className="family-row">
               <span className="label">Father</span>
-              {f.fathers_id ? (
+              {isUpdateMode ? (
+                <div className="update-field">
+                  <span className="update-hint">
+                    현재: {f.father_name !== "❌" ? `${f.father_name} (ID: ${f.fathers_id})` : "없음"}
+                  </span>
+                  <input
+                    type="number"
+                    className="family-update-input"
+                    value={editIds[f.id]?.fathers_id ?? ""}
+                    onChange={(e) => handleEditIdChange(f.id, "fathers_id", e.target.value)}
+                    placeholder="Client ID"
+                  />
+                </div>
+              ) : f.fathers_id ? (
                 <button
                   className="mini-btn"
                   onClick={() => navigate(`/clients/${f.fathers_id}`)}
@@ -245,7 +465,20 @@ export default function FamilyList() {
 
             <div className="family-row">
               <span className="label">Mother</span>
-              {f.mothers_id ? (
+              {isUpdateMode ? (
+                <div className="update-field">
+                  <span className="update-hint">
+                    현재: {f.mother_name !== "❌" ? `${f.mother_name} (ID: ${f.mothers_id})` : "없음"}
+                  </span>
+                  <input
+                    type="number"
+                    className="family-update-input"
+                    value={editIds[f.id]?.mothers_id ?? ""}
+                    onChange={(e) => handleEditIdChange(f.id, "mothers_id", e.target.value)}
+                    placeholder="Client ID"
+                  />
+                </div>
+              ) : f.mothers_id ? (
                 <button
                   className="mini-btn"
                   onClick={() => navigate(`/clients/${f.mothers_id}`)}
@@ -259,41 +492,88 @@ export default function FamilyList() {
 
             <div className="family-row">
               <span className="label">Sons</span>
-              <div className="inline-group">
-                {f.sons.length > 0
-                  ? f.sons.map((s: any) => (
-                    <button
-                      key={s.id}
-                      className="mini-btn"
-                      onClick={() => navigate(`/clients/${s.id}`)}
-                    >
-                      {s.name}
-                    </button>
-                  ))
-                  : "❌"}
-              </div>
+              {isUpdateMode ? (
+                <div className="update-field">
+                  <span className="update-hint">
+                    현재: {f.sons.length > 0
+                      ? f.sons.map((s: any) => `${s.name} (ID: ${s.id})`).join(", ")
+                      : "없음"}
+                  </span>
+                  <input
+                    type="text"
+                    className="family-update-input"
+                    value={editIds[f.id]?.sons_ids ?? ""}
+                    onChange={(e) => handleEditIdChange(f.id, "sons_ids", e.target.value)}
+                    placeholder="Client IDs (쉼표로 구분, 예: 3, 7)"
+                  />
+                </div>
+              ) : (
+                <div className="inline-group">
+                  {f.sons.length > 0
+                    ? f.sons.map((s: any) => (
+                      <button
+                        key={s.id}
+                        className="mini-btn"
+                        onClick={() => navigate(`/clients/${s.id}`)}
+                      >
+                        {s.name}
+                      </button>
+                    ))
+                    : "❌"}
+                </div>
+              )}
             </div>
 
             <div className="family-row">
               <span className="label">Daughters</span>
-              <div className="inline-group">
-                {f.daughters.length > 0
-                  ? f.daughters.map((d: any) => (
-                    <button
-                      key={d.id}
-                      className="mini-btn"
-                      onClick={() => navigate(`/clients/${d.id}`)}
-                    >
-                      {d.name}
-                    </button>
-                  ))
-                  : "❌"}
-              </div>
+              {isUpdateMode ? (
+                <div className="update-field">
+                  <span className="update-hint">
+                    현재: {f.daughters.length > 0
+                      ? f.daughters.map((d: any) => `${d.name} (ID: ${d.id})`).join(", ")
+                      : "없음"}
+                  </span>
+                  <input
+                    type="text"
+                    className="family-update-input"
+                    value={editIds[f.id]?.daughters_ids ?? ""}
+                    onChange={(e) => handleEditIdChange(f.id, "daughters_ids", e.target.value)}
+                    placeholder="Client IDs (쉼표로 구분, 예: 5, 9)"
+                  />
+                </div>
+              ) : (
+                <div className="inline-group">
+                  {f.daughters.length > 0
+                    ? f.daughters.map((d: any) => (
+                      <button
+                        key={d.id}
+                        className="mini-btn"
+                        onClick={() => navigate(`/clients/${d.id}`)}
+                      >
+                        {d.name}
+                      </button>
+                    ))
+                    : "❌"}
+                </div>
+              )}
             </div>
 
             <div className="family-row">
               <span className="label">Grandfather</span>
-              {f.gr_fathers_id ? (
+              {isUpdateMode ? (
+                <div className="update-field">
+                  <span className="update-hint">
+                    현재: {f.grandfather_name !== "❌" ? `${f.grandfather_name} (ID: ${f.gr_fathers_id})` : "없음"}
+                  </span>
+                  <input
+                    type="number"
+                    className="family-update-input"
+                    value={editIds[f.id]?.gr_fathers_id ?? ""}
+                    onChange={(e) => handleEditIdChange(f.id, "gr_fathers_id", e.target.value)}
+                    placeholder="Client ID"
+                  />
+                </div>
+              ) : f.gr_fathers_id ? (
                 <button
                   className="mini-btn"
                   onClick={() => navigate(`/clients/${f.gr_fathers_id}`)}
@@ -307,7 +587,20 @@ export default function FamilyList() {
 
             <div className="family-row">
               <span className="label">Grandmother</span>
-              {f.gr_mothers_id ? (
+              {isUpdateMode ? (
+                <div className="update-field">
+                  <span className="update-hint">
+                    현재: {f.grandmother_name !== "❌" ? `${f.grandmother_name} (ID: ${f.gr_mothers_id})` : "없음"}
+                  </span>
+                  <input
+                    type="number"
+                    className="family-update-input"
+                    value={editIds[f.id]?.gr_mothers_id ?? ""}
+                    onChange={(e) => handleEditIdChange(f.id, "gr_mothers_id", e.target.value)}
+                    placeholder="Client ID"
+                  />
+                </div>
+              ) : f.gr_mothers_id ? (
                 <button
                   className="mini-btn"
                   onClick={() => navigate(`/clients/${f.gr_mothers_id}`)}
@@ -324,37 +617,74 @@ export default function FamilyList() {
               <div className="bg-content-wrapper" style={{ width: "100%" }}>
                 {editingId === f.id ? (
                   <div className="edit-area">
-                    {!f.family_photos && (
-                      <div style={{ padding: "8px", background: "#fee2e2", color: "#b91c1c", borderRadius: "4px", fontSize: "0.9rem" }}>
-                        ⚠️ 이 가족은 연결된 사진 폴더가 없습니다. <code>[photo1]</code> 등의 태그를 써도 사진이 나오지 않습니다.
-                        DB의 <code>family_photos</code> 컬럼을 먼저 확인해주세요.
-                      </div>
-                    )}
-                    <textarea
-                      className="edit-textarea"
-                      value={editBackground}
-                      onChange={(e) => setEditBackground(e.target.value)}
-                      rows={15}
-                      placeholder="내용을 입력하세요. 사진을 넣으려면 [photo1], [photo2] 와 같이 입력하세요."
+                    {/* 숨김 파일 input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageFile(f.id, file);
+                        e.target.value = "";
+                      }}
                     />
+
+                    {/* 드래그 앤 드롭 + textarea 영역 */}
+                    <div
+                      className={`drag-drop-wrapper${isDragOver ? " drag-over" : ""}`}
+                      onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                      onDragLeave={() => setIsDragOver(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setIsDragOver(false);
+                        const file = e.dataTransfer.files[0];
+                        if (file) handleImageFile(f.id, file);
+                      }}
+                    >
+                      <textarea
+                        ref={textareaRef}
+                        className="edit-textarea"
+                        value={editBackground}
+                        onChange={(e) => setEditBackground(e.target.value)}
+                        rows={15}
+                        placeholder="내용을 입력하세요. 이미지는 아래 버튼으로 추가하거나 여기에 드래그 앤 드롭하세요."
+                      />
+                      {isDragOver && (
+                        <div className="drag-overlay">
+                          이미지를 여기에 놓으세요
+                        </div>
+                      )}
+                    </div>
+
                     <div className="edit-buttons">
+                      {/* 이미지 추가 버튼 */}
+                      <button
+                        className="mini-btn image-upload-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                        title="이미지 파일을 선택하면 자동으로 업로드되고 [photo태그]가 삽입됩니다"
+                      >
+                        {isUploading ? "업로드 중..." : "이미지 추가"}
+                      </button>
+
                       <button
                         className="mini-btn save-btn"
                         onClick={() => saveEditing(f.id)}
-                        disabled={isSaving}
+                        disabled={isSaving || isUploading}
                       >
                         {isSaving ? "Saving..." : "Save"}
                       </button>
                       <button
                         className="mini-btn cancel-btn"
                         onClick={cancelEditing}
-                        disabled={isSaving}
+                        disabled={isSaving || isUploading}
                       >
                         Cancel
                       </button>
                     </div>
                     <p className="help-text">
-                      * 팁: <code>[photo1]</code>은 해당 가족의 사진 폴더 내 <code>1.png</code> 파일을 의미합니다.
+                      * 이미지 추가 버튼 또는 드래그 앤 드롭으로 이미지를 올리면 커서 위치에 <code>[photo숫자]</code> 태그가 자동 삽입됩니다.
                     </p>
                   </div>
                 ) : (

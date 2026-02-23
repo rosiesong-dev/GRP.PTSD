@@ -3,6 +3,73 @@
   margin: 0 auto;
 }
 
+/* 상단 액션 버튼 영역 */
+.family-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.family-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.family-action-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #4f46e5;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.family-action-btn:hover {
+  background-color: #3730a3;
+}
+
+.family-save-action-btn {
+  background-color: #f97316;
+}
+
+.family-save-action-btn:hover {
+  background-color: #ea6c0a;
+}
+
+.family-save-action-btn:disabled {
+  background-color: #fdba74;
+  cursor: not-allowed;
+}
+
+/* Update 모드 - 필드 */
+.update-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.update-hint {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.family-update-input {
+  padding: 5px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  width: 300px;
+  outline: none;
+}
+
+.family-update-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
 .family-card {
   border: 1px solid #e5e7eb;
   border-radius: 14px;
@@ -76,6 +143,46 @@
   object-fit: contain;
 }
 
+/* Drag & Drop 영역 */
+.drag-drop-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.drag-drop-wrapper.drag-over .edit-textarea {
+  border-color: #4f46e5;
+  background-color: #eef2ff;
+}
+
+.drag-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(79, 70, 229, 0.12);
+  border: 2px dashed #4f46e5;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4f46e5;
+  pointer-events: none;
+}
+
+/* 이미지 추가 버튼 */
+.image-upload-btn {
+  background-color: #0ea5e9 !important;
+}
+
+.image-upload-btn:hover {
+  background-color: #0284c7 !important;
+}
+
+.image-upload-btn:disabled {
+  background-color: #7dd3fc !important;
+  cursor: not-allowed;
+}
+
 /* Edit Mode Styles */
 .edit-area {
   width: 100%;
@@ -98,6 +205,18 @@
 .edit-buttons {
   display: flex;
   gap: 10px;
+  align-items: center;
+}
+
+.edit-buttons > button {
+  padding: 6px 20px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  line-height: 1.2;
+  box-sizing: border-box;
+  height: 32px;
+  margin: 0;
+  vertical-align: middle;
 }
 
 .save-btn {

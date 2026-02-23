@@ -212,10 +212,17 @@ export default function ClientDetail() {
       <h1>[{client.id ?? "Client Detail"}] {client.name ?? "Client Detail"} </h1>
 
       <div className="detail-actions" style={{ display: "flex", justifyContent: "space-between" }}>
-        <button onClick={() => navigate("/clients")}>◀ Go to list</button>
-        <button onClick={() => setEditMode(!editMode)}>
-          {editMode ? "Cancel" : "Update"}
-        </button>
+        <button className="back-btn" onClick={() => navigate("/clients")}>◀ Go to list</button>
+        <div>
+          <button onClick={() => setEditMode(!editMode)}>
+            {editMode ? "Cancel" : "Update"}
+          </button>
+          {editMode && (
+            <button className="save-btn" onClick={handleSave}>
+              Save
+            </button>
+          )}
+        </div>
       </div>
 
       {sections.map((section) => (

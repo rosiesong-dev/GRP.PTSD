@@ -6,7 +6,7 @@
   padding: 20px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   font-family: sans-serif;
 }
 
@@ -53,16 +53,22 @@
   border: 1px solid #ccc;
 }
 
-.save-btn {
-  margin-top: 20px;
+.detail-container .save-btn {
+  margin-top: 0;
   padding: 10px 18px;
-  background-color: #10b981;
+  background-color: #f97316;
+  /* Orange color */
   color: white;
   border-radius: 6px;
   border: none;
   cursor: pointer;
 }
 
-.save-btn:hover {
-  background-color: #059669;
+.detail-container .save-btn:hover {
+  background-color: #ea580c;
+}
+
+/* Add margin only for the bottom save button if needed */
+.detail-container>.save-btn {
+  margin-top: 20px;
 }

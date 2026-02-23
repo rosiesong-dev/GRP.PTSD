@@ -49,7 +49,7 @@ export default function PclAdult() {
 
   const [pclData, setPclData] = useState<PclData>({
     client_id: Number(id),
-    detail: Array(20).fill(0),
+    detail: Array(23).fill(0),
   });
   const [loading, setLoading] = useState(true);
 
@@ -114,7 +114,7 @@ export default function PclAdult() {
       {/* 결과 요약 */}
       <div className="pcl-section">
         <h2>Summary</h2>
-        
+
         <div style={{ display: "flex", gap: "30px", marginBottom: "30px" }}>
           <div style={{ flex: 1, padding: "20px", backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
             <h3 style={{ marginTop: 0 }}>Total Score</h3>
@@ -132,10 +132,10 @@ export default function PclAdult() {
         </div>
 
         {totalScore >= 33 && (
-          <div style={{ 
-            padding: "15px", 
-            backgroundColor: "#fff3cd", 
-            border: "1px solid #ffc107", 
+          <div style={{
+            padding: "15px",
+            backgroundColor: "#fff3cd",
+            border: "1px solid #ffc107",
             borderRadius: "8px",
             marginBottom: "20px"
           }}>
@@ -147,7 +147,7 @@ export default function PclAdult() {
       {/* 질문별 응답 */}
       <div className="pcl-section">
         <h2>Detailed Responses</h2>
-        
+
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ backgroundColor: "#f8f9fa" }}>
