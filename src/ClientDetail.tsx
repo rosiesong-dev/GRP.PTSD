@@ -44,77 +44,83 @@ const readOnlyFields: (keyof Client)[] = ["id", "family_id"];
 
 const sections: {
   title: string;
-  fields: { key: keyof Client | "counseling_link" | "pcl_link"; label: string }[];
+  fields: { key: keyof Client | "counseling_link" | "pcl_link" | "counseling_sessions_link"; label: string }[];
 }[] = [
-  {
-    title: "Basic Information",
-    fields: [
-      { key: "name", label: "Name" },
-      { key: "profile_image", label: "Profile (사진)" },
-      { key: "status", label: "Status" },
-      { key: "job_study_situation_need", label: "Job/Study/Situation/Needs" },
-      { key: "birth_date", label: "Birthday" },
-      { key: "age", label: "Age" },
-      { key: "gender", label: "Gender" },
-      { key: "care_giver", label: "Care giver" },
-      { key: "cnic_number", label: "CNIC number" },
-      { key: "injured_id", label: "Injured number" },
-      { key: "martyr_id", label: "Martyred number" },
+    {
+      title: "Basic Information",
+      fields: [
+        { key: "name", label: "Name" },
+        { key: "profile_image", label: "Profile (사진)" },
+        { key: "status", label: "Status" },
+        { key: "job_study_situation_need", label: "Job/Study/Situation/Needs" },
+        { key: "birth_date", label: "Birthday" },
+        { key: "age", label: "Age" },
+        { key: "gender", label: "Gender" },
+        { key: "care_giver", label: "Care giver" },
+        { key: "cnic_number", label: "CNIC number" },
+        { key: "injured_id", label: "Injured number" },
+        { key: "martyr_id", label: "Martyred number" },
 
-    ],
-  },
-  {
-    title: "Contact & Guardian Information",
-    fields: [
-      { key: "mobile", label: "Phone number" },
-      { key: "address", label: "Address" },
-      { key: "father_name", label: "Father name" },
-      { key: "guardian_name", label: "Guardian name" },
-      { key: "guardian_contact", label: "Phone number (of Guardian)" },
-    ],
-  },
-  {
-    title: "Disaster Information",
-    fields: [
-      { key: "disaster_id", label: "Disaster ID" },
-      { key: "disaster_type", label: "Disaster type (재난 유형)" },
-      { key: "disaster_vtype", label: "Disaster victim type (재난 피해자 유형)" },
-      { key: "disaster_refer_to", label: "Disaster refer (의뢰 기관?)" },
-      { key: "disaster_case_manager", label: "Disaster case manager" },
-      { key: "disaster_medical_coverage", label: "Medical coverage" },
-      { key: "disaster_result_action", label: "Result" },
-    ],
-  },
-  {
-    title: "Additional Information",
-    fields: [
-      { key: "code", label: "Code" },
-      { key: "life_status", label: "Injured or martyred" },
-      { key: "personal_history", label: "Personal history" },
-      { key: "widow", label: "Widow status" },
-      { key: "orphan", label: "Orphan status" },
-    ],
-  },
-  {
-    title: "Family Information",
-    fields: [
-      { key: "family_id", label: "Family info" },
-      // { key: "client_image", label: "Family pictures" },
-    ],
-  },
-  {
-    title: "Counseling Records",
-    fields: [
-      { key: "counseling_link", label: "Counseling details" },
-    ],
-  },
-  {
-    title: "PCL",
-    fields: [
-      { key: "pcl_link", label: "PCL details" },
-    ],
-  },
-];
+      ],
+    },
+    {
+      title: "Contact & Guardian Information",
+      fields: [
+        { key: "mobile", label: "Phone number" },
+        { key: "address", label: "Address" },
+        { key: "father_name", label: "Father name" },
+        { key: "guardian_name", label: "Guardian name" },
+        { key: "guardian_contact", label: "Phone number (of Guardian)" },
+      ],
+    },
+    {
+      title: "Disaster Information",
+      fields: [
+        { key: "disaster_id", label: "Disaster ID" },
+        { key: "disaster_type", label: "Disaster type (재난 유형)" },
+        { key: "disaster_vtype", label: "Disaster victim type (재난 피해자 유형)" },
+        { key: "disaster_refer_to", label: "Disaster refer (의뢰 기관?)" },
+        { key: "disaster_case_manager", label: "Disaster case manager" },
+        { key: "disaster_medical_coverage", label: "Medical coverage" },
+        { key: "disaster_result_action", label: "Result" },
+      ],
+    },
+    {
+      title: "Additional Information",
+      fields: [
+        { key: "code", label: "Code" },
+        { key: "life_status", label: "Injured or martyred" },
+        { key: "personal_history", label: "Personal history" },
+        { key: "widow", label: "Widow status" },
+        { key: "orphan", label: "Orphan status" },
+      ],
+    },
+    {
+      title: "Family Information",
+      fields: [
+        { key: "family_id", label: "Family info" },
+        // { key: "client_image", label: "Family pictures" },
+      ],
+    },
+    {
+      title: "Counseling Records (PDF)",
+      fields: [
+        { key: "counseling_link", label: "Counseling details" },
+      ],
+    },
+    {
+      title: "PCL",
+      fields: [
+        { key: "pcl_link", label: "PCL details" },
+      ],
+    },
+    {
+      title: "Counseling Sessions",
+      fields: [
+        { key: "counseling_sessions_link", label: "Counseling sessions Brief" },
+      ],
+    },
+  ];
 
 export default function ClientDetail() {
   const { id } = useParams();
@@ -130,7 +136,7 @@ export default function ClientDetail() {
 
   const fetchClient = async () => {
     setLoading(true);
-    
+
     // 1. client 데이터 가져오기
     const { data: clientData, error: clientError } = await supabase
       .from("clients")
@@ -174,7 +180,7 @@ export default function ClientDetail() {
 
     const dataToUpdate: any = {};
     Object.entries(data).forEach(([key, value]) => {
-      if (['created_at', 'updated_at'].includes(key)) return; 
+      if (['created_at', 'updated_at'].includes(key)) return;
 
       if (value === undefined) dataToUpdate[key] = null;
       else if (key === "widow" || key === "orphan") dataToUpdate[key] = !!value;
@@ -233,10 +239,10 @@ export default function ClientDetail() {
               {section.fields.map(({ key, label }) => {
                 // 상담 링크 특수 처리
                 if (key === "counseling_link") {
-                  const counselingPath = client.counsel_q_adult 
-                    ? `/counseling2/${client.id}` 
+                  const counselingPath = client.counsel_q_adult
+                    ? `/counseling2/${client.id}`
                     : `/counseling/${client.id}`;
-                  
+
                   return (
                     <tr key={key}>
                       <td className="field-name">{label}</td>
@@ -255,9 +261,9 @@ export default function ClientDetail() {
                 // PCL 링크 특수 처리
                 if (key === "pcl_link") {
                   const pclPath = client.is_adult_counsel
-                    ? `/pcl-adult/${client.id}` 
+                    ? `/pcl-adult/${client.id}`
                     : `/pcl-child/${client.id}`;
-                  
+
                   return (
                     <tr key={key}>
                       <td className="field-name">{label}</td>
@@ -265,6 +271,23 @@ export default function ClientDetail() {
                         <button
                           className="primary-btn"
                           onClick={() => navigate(pclPath)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                }
+
+                // Counseling Sessions 링크 특수 처리
+                if (key === "counseling_sessions_link") {
+                  return (
+                    <tr key={key}>
+                      <td className="field-name">{label}</td>
+                      <td className="field-value">
+                        <button
+                          className="primary-btn"
+                          onClick={() => navigate(`/counseling-sessions/${client.id}`)}
                         >
                           View
                         </button>
@@ -311,7 +334,7 @@ export default function ClientDetail() {
                         ) : (
                           <input
                             type="text"
-                            value={typeof value === "boolean" ? "" : value ?? ""} 
+                            value={typeof value === "boolean" ? "" : value ?? ""}
                             onChange={(e) =>
                               handleChange(key as keyof Client, e.target.value)
                             }

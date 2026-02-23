@@ -171,15 +171,15 @@ export default function FamilyList() {
 
         const parsedSons = ids.sons_ids
           ? ids.sons_ids
-              .split(",")
-              .map((s) => parseInt(s.trim()))
-              .filter((n) => !isNaN(n))
+            .split(",")
+            .map((s) => parseInt(s.trim()))
+            .filter((n) => !isNaN(n))
           : [];
         const parsedDaughters = ids.daughters_ids
           ? ids.daughters_ids
-              .split(",")
-              .map((s) => parseInt(s.trim()))
-              .filter((n) => !isNaN(n))
+            .split(",")
+            .map((s) => parseInt(s.trim()))
+            .filter((n) => !isNaN(n))
           : [];
 
         const updateData = {
@@ -700,21 +700,7 @@ export default function FamilyList() {
               </div>
             </div>
 
-            {/* 📸 Photos - 모든 사진을 갤러리로 표시 */}
-            <div className="family-row">
-              <span className="label">Photos</span>
-              <div className="photo-grid">
-                {getPhotoUrls(f.family_photos, 20).map((url, idx) => (
-                  <img
-                    key={idx}
-                    src={url}
-                    alt={`family-${idx + 1}`}
-                    className="photo-item"
-                    onError={(e) => (e.currentTarget.style.display = "none")}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* 📸 Photos - 모든 사진을 갤러리로 표시하는 기능 제거됨 (본문 내에 포함되므로 필요 없음) */}
           </div>
         ))
       )}

@@ -9,6 +9,7 @@ import Login from "./Login";
 import ProtectedRoute from "./ProtectedRoute";
 import PclAdult from "./PclAdult";
 import PclChild from "./PclChild";
+import CounselingSessions from "./CounselingSessions";
 
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
-      
+
       {/* 보호된 라우트 */}
       <Route path="/clients" element={<ProtectedRoute><ClientList /></ProtectedRoute>} />
       <Route path="/clients/:id" element={<ProtectedRoute><ClientDetail /></ProtectedRoute>} />
@@ -24,8 +25,9 @@ function App() {
       <Route path="/add-client" element={<ProtectedRoute><AddClient /></ProtectedRoute>} />
       <Route path="/counseling/:id" element={<ProtectedRoute><CounselRecords /></ProtectedRoute>} />
       <Route path="/counseling2/:id" element={<ProtectedRoute><CounselRecords2 /></ProtectedRoute>} />
-      <Route path="/pcl-adult/:id" element={<ProtectedRoute><PclAdult /></ProtectedRoute>} /> 
+      <Route path="/pcl-adult/:id" element={<ProtectedRoute><PclAdult /></ProtectedRoute>} />
       <Route path="/pcl-child/:id" element={<ProtectedRoute><PclChild /></ProtectedRoute>} />
+      <Route path="/counseling-sessions/:id" element={<ProtectedRoute><CounselingSessions /></ProtectedRoute>} />
     </Routes>
   );
 }
