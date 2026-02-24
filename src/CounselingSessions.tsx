@@ -12,6 +12,7 @@ type CounselSession = {
     counsel_type: string | null;
     status: string | null;
     emergency: string | null;
+    care_giver: string | null;
     topic: string | null;
     eval_spiritual: string | null;
     eval_physical: string | null;
@@ -37,6 +38,8 @@ export default function CounselingSessions() {
     const [editedSessions, setEditedSessions] = useState<CounselSession[]>([]);
     const [isEditing, setIsEditing] = useState(false);
     const [clientName, setClientName] = useState<string>("");
+    const [careGiver, setCareGiver] = useState<string>("");
+    const [editedCareGiver, setEditedCareGiver] = useState<string>("");
     const [loading, setLoading] = useState(true);
 
 
@@ -47,14 +50,18 @@ export default function CounselingSessions() {
     const fetchData = async () => {
         setLoading(true);
 
-        // Fetch Client Name
+        // Fetch Client Name and Care Giver
         const { data: cData } = await supabase
             .from("clients")
-            .select("name")
+            .select("name, care_giver")
             .eq("id", Number(id))
             .single();
 
-        if (cData) setClientName(cData.name);
+        if (cData) {
+            setClientName(cData.name);
+            setCareGiver(cData.care_giver || "");
+            setEditedCareGiver(cData.care_giver || "");
+        }
 
         // Fetch Counsel Sessions
         const { data: sData, error } = await supabase
@@ -82,14 +89,24 @@ export default function CounselingSessions() {
     const handleSave = async () => {
         setLoading(true);
         try {
+            // Update counsels
             await Promise.all(
                 editedSessions.map(async (session, index) => {
                     const prev = sessions[index];
                     if (JSON.stringify(session) !== JSON.stringify(prev)) {
-                        await supabase.from("counsels").update(session).eq("id", session.id);
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        const { care_giver, ...counselData } = session; // Remove care_giver before saving to counsels
+                        await supabase.from("counsels").update(counselData).eq("id", session.id);
                     }
                 })
             );
+
+            // Update client care_giver if changed
+            if (careGiver !== editedCareGiver) {
+                await supabase.from("clients").update({ care_giver: editedCareGiver }).eq("id", Number(id));
+                setCareGiver(editedCareGiver);
+            }
+
             setSessions(editedSessions);
             setIsEditing(false);
             alert("Sessions updated successfully!");
@@ -102,6 +119,7 @@ export default function CounselingSessions() {
 
     const handleCancel = () => {
         setEditedSessions(sessions);
+        setEditedCareGiver(careGiver);
         setIsEditing(false);
     };
 
@@ -186,6 +204,14 @@ export default function CounselingSessions() {
                                             ) : (
                                                 "-"
                                             )
+                                        )}
+                                    </div>
+                                    <div className="info-item">
+                                        <strong>Care-Giver:</strong>
+                                        {isEditing ? (
+                                            <input type="text" value={editedCareGiver} onChange={(e) => setEditedCareGiver(e.target.value)} style={{ marginLeft: '5px' }} />
+                                        ) : (
+                                            careGiver || "-"
                                         )}
                                     </div>
                                 </div>
