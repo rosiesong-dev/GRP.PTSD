@@ -91,13 +91,12 @@ export default function CounselingSessions() {
         try {
             // Update counsels
             await Promise.all(
-                editedSessions.map(async (session, index) => {
-                    const prev = sessions[index];
-                    if (JSON.stringify(session) !== JSON.stringify(prev)) {
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                        const { care_giver, ...counselData } = session; // Remove care_giver before saving to counsels
-                        await supabase.from("counsels").update(counselData).eq("id", session.id);
-                    }
+                editedSessions.map(async (session) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { care_giver, ...counselData } = session; // Remove care_giver before saving to counsels
+
+                    // Supabase treats "" as an empty string, which is fine, but we always want to update
+                    await supabase.from("counsels").update(counselData).eq("id", session.id);
                 })
             );
 
