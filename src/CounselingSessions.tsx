@@ -24,7 +24,7 @@ type CounselSession = {
     education: string | null;
     jobs: string | null;
     business: string | null;
-    vocational: string | null;
+    vocation: string | null;
     note: string | null;
     prayer_note: string | null;
     file: string | null;
@@ -267,7 +267,7 @@ export default function CounselingSessions() {
                                 </div>
                                 <div className="text-block">
                                     <strong>Vocation</strong>
-                                    {isEditing ? <input type="text" value={session.vocational || ""} onChange={(e) => handleEditChange(index, 'vocational', e.target.value)} style={{ width: 'calc(100% - 150px)', marginLeft: '10px' }} /> : (session.vocational || "No data")}
+                                    {isEditing ? <input type="text" value={session.vocation || ""} onChange={(e) => handleEditChange(index, 'vocation', e.target.value)} style={{ width: 'calc(100% - 150px)', marginLeft: '10px' }} /> : (session.vocation || "No data")}
                                 </div>
                                 <div className="text-block">
                                     <strong>Note</strong>
