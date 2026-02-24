@@ -21,7 +21,7 @@ type CounselSession = {
     eval_psychological: string | null;
     eval_total: number | null;
     eval_average: number | null;
-    educational: string | null;
+    education: string | null;
     jobs: string | null;
     business: string | null;
     vocational: string | null;
@@ -255,7 +255,7 @@ export default function CounselingSessions() {
                                 <h3>Self-Sustainable Living</h3>
                                 <div className="text-block">
                                     <strong>Education</strong>
-                                    {isEditing ? <input type="text" value={session.educational || ""} onChange={(e) => handleEditChange(index, 'educational', e.target.value)} style={{ width: 'calc(100% - 150px)', marginLeft: '10px' }} /> : (session.educational || "No data")}
+                                    {isEditing ? <input type="text" value={session.education || ""} onChange={(e) => handleEditChange(index, 'education', e.target.value)} style={{ width: 'calc(100% - 150px)', marginLeft: '10px' }} /> : (session.education || "No data")}
                                 </div>
                                 <div className="text-block">
                                     <strong>Jobs</strong>
