@@ -154,6 +154,28 @@ export default function CounselingSessions() {
                 </div>
             </div>
 
+            {/* Static Info Block */}
+            <div className="session-section" style={{ marginBottom: '30px', display: 'flex', border: 'none', boxShadow: 'none', padding: '0 20px', borderRadius: '0', backgroundColor: 'transparent' }}>
+                <div style={{ flex: 1 }}>
+                    {/* Column 1 Empty */}
+                </div>
+                <div style={{ flex: 1 }}>
+                    {/* Column 2 Empty */}
+                </div>
+                <div style={{ flex: 1 }}>
+                    <strong>S-Scholarship</strong>
+                </div>
+                <div style={{ flex: 1, lineHeight: '1.5' }}>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                        ASC: All Saint Church<br />
+                        Psychological<br />
+                        a. Safety<br />
+                        b. Memory/Grieving<br />
+                        c. Reconnection
+                    </div>
+                </div>
+            </div>
+
             <div className="sessions-list">
                 {sessions.length === 0 ? (
                     <p className="no-data">No counseling sessions found.</p>
@@ -247,6 +269,10 @@ export default function CounselingSessions() {
                                         <strong>Psychological</strong>
                                         {isEditing ? <input type="text" value={session.eval_psychological || ""} onChange={(e) => handleEditChange(index, 'eval_psychological', e.target.value)} style={{ width: 'calc(100% - 150px)', marginLeft: '10px' }} /> : (session.eval_psychological || "No data")}
                                     </div>
+                                    <div className="text-block">
+                                        <strong>Note</strong>
+                                        {isEditing ? <textarea value={session.note || ""} onChange={(e) => handleEditChange(index, 'note', e.target.value)} style={{ flex: 1, minHeight: '60px' }} /> : <span style={{ whiteSpace: 'pre-wrap', flex: 1 }}>{session.note || "No data"}</span>}
+                                    </div>
                                 </div>
                             </div>
 
@@ -268,10 +294,6 @@ export default function CounselingSessions() {
                                 <div className="text-block">
                                     <strong>Vocation</strong>
                                     {isEditing ? <input type="text" value={session.vocation || ""} onChange={(e) => handleEditChange(index, 'vocation', e.target.value)} style={{ width: 'calc(100% - 150px)', marginLeft: '10px' }} /> : (session.vocation || "No data")}
-                                </div>
-                                <div className="text-block">
-                                    <strong>Note</strong>
-                                    {isEditing ? <textarea value={session.note || ""} onChange={(e) => handleEditChange(index, 'note', e.target.value)} style={{ width: '100%', marginTop: '5px', minHeight: '60px' }} /> : (session.note || "No data")}
                                 </div>
                             </div>
 

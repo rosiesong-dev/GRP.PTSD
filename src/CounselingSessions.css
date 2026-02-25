@@ -200,13 +200,15 @@
 }
 
 .text-block {
+    display: flex;
+    align-items: flex-start;
     margin-bottom: 12px;
     line-height: 1.5;
     color: #333;
 }
 
 .text-block strong {
-    display: inline-block;
+    flex-shrink: 0;
     width: 130px;
     color: #0284c7;
     /* Sky blue shade */
