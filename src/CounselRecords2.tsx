@@ -43,7 +43,7 @@ const questions = [
   { key: "counsel_q13", label: "What would you like to say? to Pakistan Government" },
   { key: "counsel_q14", label: "Other things?" },
   { key: "counsel_q15", label: "Do you have family worship and prayer everyday regularly?" },
-  { key: "counsel_q16", label: "Note taking"},
+  { key: "counsel_q16", label: "Note taking" },
   // { key: "counsel_q12", label: "Additional" }
 ];
 
@@ -132,66 +132,77 @@ export default function CounselRecords() {
 
       <h2 className="counsel-title">[{counselData.id}] {counselData.name}</h2>
 
-      {questions.map(({ key, label }, index) => {
-        const value = counselData[key as keyof CounselData];
+      {!counselData.counsel_q_image ? (
+        <>
+          <hr style={{ border: "0", borderTop: "1px solid #e0e0e0", margin: "30px 0" }} />
+          <p style={{ textAlign: "center", color: "#888", fontSize: "1.2rem", padding: "40px 0" }}>
+            No Information
+          </p>
+        </>
+      ) : (
+        <>
+          {questions.map(({ key, label }, index) => {
+            const value = counselData[key as keyof CounselData];
 
-        return (
-          <div key={key} className="counsel-question-card">
-            <div className="counsel-question-header">
-              <span className="counsel-question-number">Q{index}</span>
-              <span className="counsel-question-text">{label}</span>
+            return (
+              <div key={key} className="counsel-question-card">
+                <div className="counsel-question-header">
+                  <span className="counsel-question-number">Q{index}</span>
+                  <span className="counsel-question-text">{label}</span>
+                </div>
+
+                <div className="counsel-answer-container">
+                  {editMode ? (
+                    <textarea
+                      className="counsel-textarea"
+                      value={value ?? ""}
+                      onChange={(e) => handleChange(key as keyof CounselData, e.target.value)}
+                      rows={4}
+                      placeholder="답변을 입력하세요..."
+                    />
+                  ) : (
+                    <div className={`counsel-answer-display ${!value ? "empty" : ""}`}>
+                      {value || "No answer provided"}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          {editMode && (
+            <div className="counsel-save-container">
+              <button className="counsel-save-btn" onClick={handleSave}>
+                💾 Save All Changes
+              </button>
             </div>
+          )}
 
-            <div className="counsel-answer-container">
-              {editMode ? (
-                <textarea
-                  className="counsel-textarea"
-                  value={value ?? ""}
-                  onChange={(e) => handleChange(key as keyof CounselData, e.target.value)}
-                  rows={4}
-                  placeholder="답변을 입력하세요..."
+          {/* 📸 Counsel Result Photo */}
+          <div className="counsel-photos-section">
+            <h2 className="counsel-title">Counsel Result Paper</h2>
+
+
+            <div className="counsel-photos-grid">
+              {getCounselPhotoUrl() ? (
+                <img
+                  src={getCounselPhotoUrl()!}
+                  alt="counsel-result"
+                  className="counsel-photo"
+                  onLoad={() => console.log("✅ 사진 로드 성공!")}
+                  onError={(_e) => {
+                    console.error("❌ 사진 로드 실패:", getCounselPhotoUrl());
+                    alert("사진을 불러올 수 없습니다: " + getCounselPhotoUrl());
+                  }}
+                  style={{ border: "3px solid red" }}
                 />
               ) : (
-                <div className={`counsel-answer-display ${!value ? "empty" : ""}`}>
-                  {value || "No answer provided"}
-                </div>
+                <p className="counsel-no-photos">No photo available</p>
               )}
             </div>
           </div>
-        );
-      })}
-
-      {editMode && (
-        <div className="counsel-save-container">
-          <button className="counsel-save-btn" onClick={handleSave}>
-            💾 Save All Changes
-          </button>
-        </div>
+        </>
       )}
-
-      {/* 📸 Counsel Result Photo */}
-      <div className="counsel-photos-section">
-        <h2 className="counsel-title">Counsel Result Paper</h2>
-        
-
-        <div className="counsel-photos-grid">
-          {getCounselPhotoUrl() ? (
-            <img
-              src={getCounselPhotoUrl()!}
-              alt="counsel-result"
-              className="counsel-photo"
-              onLoad={() => console.log("✅ 사진 로드 성공!")}
-              onError={(_e) => {
-                console.error("❌ 사진 로드 실패:", getCounselPhotoUrl());
-                alert("사진을 불러올 수 없습니다: " + getCounselPhotoUrl());
-              }}
-              style={{ border: "3px solid red" }}
-            />
-          ) : (
-            <p className="counsel-no-photos">No photo available</p>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

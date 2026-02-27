@@ -74,8 +74,9 @@ export default function CounselingSessions() {
             console.error(error);
             alert("Failed to load generic sessions data");
         } else {
-            setSessions(sData || []);
-            setEditedSessions(sData || []);
+            const filteredData = (sData || []).filter(session => session.start_date && session.start_date.startsWith("2020"));
+            setSessions(filteredData);
+            setEditedSessions(filteredData);
         }
         setLoading(false);
     };
@@ -155,30 +156,32 @@ export default function CounselingSessions() {
             </div>
 
             {/* Static Info Block */}
-            <div className="session-section" style={{ marginBottom: '30px', display: 'flex', border: 'none', boxShadow: 'none', padding: '0 20px', borderRadius: '0', backgroundColor: 'transparent' }}>
-                <div style={{ flex: 1 }}>
-                    {/* Column 1 Empty */}
-                </div>
-                <div style={{ flex: 1 }}>
-                    {/* Column 2 Empty */}
-                </div>
-                <div style={{ flex: 1 }}>
-                    <strong>S-Scholarship</strong>
-                </div>
-                <div style={{ flex: 1, lineHeight: '1.5' }}>
-                    <div style={{ whiteSpace: 'pre-wrap' }}>
-                        ASC: All Saint Church<br />
-                        Psychological<br />
-                        a. Safety<br />
-                        b. Memory/Grieving<br />
-                        c. Reconnection
+            {sessions.length > 0 && (
+                <div className="session-section" style={{ marginBottom: '30px', display: 'flex', border: 'none', boxShadow: 'none', padding: '0 20px', borderRadius: '0', backgroundColor: 'transparent' }}>
+                    <div style={{ flex: 1 }}>
+                        {/* Column 1 Empty */}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        {/* Column 2 Empty */}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <strong>S-Scholarship</strong>
+                    </div>
+                    <div style={{ flex: 1, lineHeight: '1.5' }}>
+                        <div style={{ whiteSpace: 'pre-wrap' }}>
+                            ASC: All Saint Church<br />
+                            Psychological<br />
+                            a. Safety<br />
+                            b. Memory/Grieving<br />
+                            c. Reconnection
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             <div className="sessions-list">
                 {sessions.length === 0 ? (
-                    <p className="no-data">No counseling sessions found.</p>
+                    <p className="no-data">No Information</p>
                 ) : (
                     editedSessions.map((session, index) => (
                         <div key={session.id} className="session-card">

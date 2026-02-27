@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { supabase } from "./lib/supabase";
 import "./FamilyList.css";
 
@@ -26,6 +26,8 @@ type Client = {
 export default function FamilyList() {
   const navigate = useNavigate();
   const params = useParams();
+  const location = useLocation();
+  const { clientId, clientName } = location.state || {};
   const familyId = params.familyId || params.id; // familyId 또는 id 둘 다 체크
 
   const [families, setFamilies] = useState<any[]>([]);
@@ -73,8 +75,12 @@ export default function FamilyList() {
       // familyId가 있으면 해당 가족만, 없으면 모든 가족 가져오기
       let query = supabase.from("family").select("*");
 
-      if (familyId) {
+      if (familyId && familyId !== "empty") {
         query = query.eq("id", Number(familyId));
+      } else if (familyId === "empty") {
+        setFamilies([]);
+        setLoading(false);
+        return;
       }
 
       const { data: familiesData, error: fErr } = await query;
@@ -404,10 +410,25 @@ export default function FamilyList() {
     <div className="family-container">
       <h1 style={{ textAlign: "center" }}>[ Family Info ]</h1>
 
+      {familyId === "empty" && clientId && clientName && (
+        <div style={{ textAlign: "center", fontSize: "1.1rem", color: "#333", marginBottom: "20px" }}>
+          [{clientId}] {clientName}
+        </div>
+      )}
+
       {/* 상단 액션 버튼 */}
       <div className="family-actions">
-        <button className="family-action-btn" onClick={() => navigate("/clients")}>
-          ◀ Go to list
+        <button
+          className="family-action-btn"
+          onClick={() => {
+            if (clientId) {
+              navigate(`/clients/${clientId}`);
+            } else {
+              navigate(-1); // 이전 페이지로 브라우저 뒤로가기
+            }
+          }}
+        >
+          ◀ Go to client detail
         </button>
         <div className="family-actions-right">
           <button
@@ -432,7 +453,16 @@ export default function FamilyList() {
       </div>
 
       {families.length === 0 ? (
-        <p style={{ textAlign: "center" }}>가족 정보가 없습니다.</p>
+        familyId === "empty" ? (
+          <>
+            <hr style={{ border: "0", borderTop: "1px solid #e0e0e0", margin: "30px 0" }} />
+            <p style={{ textAlign: "center", color: "#888", fontSize: "1.2rem", padding: "40px 0" }}>
+              No Information
+            </p>
+          </>
+        ) : (
+          <p style={{ textAlign: "center" }}>가족 정보가 없습니다.</p>
+        )
       ) : (
         families.map((f) => (
           <div key={f.id} className="family-card">

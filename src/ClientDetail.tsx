@@ -344,7 +344,7 @@ export default function ClientDetail() {
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                           <button
                             className="primary-btn"
-                            onClick={() => navigate(`/families/${value ?? ""}`)}
+                            onClick={() => navigate(`/families/${value || "empty"}`, { state: { clientId: client.id, clientName: client.name } })}
                           >
                             View
                           </button>
