@@ -39,6 +39,7 @@ export default function Login() {
       
       // 로그인 상태 저장
       sessionStorage.setItem("isLoggedIn", "true");
+      sessionStorage.setItem("role", data.role ?? "admin");
       
       // alert("Login successful!");
       console.log("Navigating to /clients");

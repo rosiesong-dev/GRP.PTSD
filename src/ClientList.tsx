@@ -23,6 +23,10 @@ export default function ClientList() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ✅ role 확인
+  const role = sessionStorage.getItem("role");
+  const isGuest = role === "guest";
+
   useEffect(() => {
     fetchClients();
   }, [page, search]);
@@ -85,27 +89,10 @@ export default function ClientList() {
     navigate("/add-client");
   };
 
-
-  // delete 기능 필요하면 주석 제거
-  // const handleDelete = async (id: number) => {
-  //   if (!window.confirm("정말 삭제하시겠습니까?")) return;
-
-  //   try {
-  //     const { data, error } = await supabase.rpc("update_family_remove_client", { p_client_id: id });
-
-  //     if (error) throw error;
-
-  //     alert("삭제 완료!");
-  //     fetchClients(); // 리스트 갱신
-  //   } catch (err: any) {
-  //     console.error("삭제 실패", err);
-  //     alert(`삭제 실패: ${err.message}`);
-  //   }
-  // };
-
   const handleLogout = () => {
     if (window.confirm("로그아웃 하시겠습니까?")) {
       sessionStorage.removeItem("isLoggedIn");
+      sessionStorage.removeItem("role");
       navigate("/login");
     }
   };
@@ -142,9 +129,12 @@ export default function ClientList() {
           }}
           style={{ padding: "10px", width: "300px", borderRadius: "8px", border: "1px solid #ccc" }}
         />
-        <button className="primary" onClick={handleAddClient} style={{ padding: "10px 16px" }}>
-          + Add
-        </button>
+        {/* ✅ guest는 Add 버튼 숨김 (필요 시 제거) */}
+        {!isGuest && (
+          <button className="primary" onClick={handleAddClient} style={{ padding: "10px 16px" }}>
+            + Add
+          </button>
+        )}
       </div>
 
       {/* 📋 테이블 */}
@@ -174,22 +164,24 @@ export default function ClientList() {
                 clients.map((c) => (
                   <tr key={c.id}>
                     <td style={{ textAlign: "center" }}>{c.id}</td>
-                    <td style={{ textAlign: "center" }}>{c.name ?? "No info"}</td>
+
+                    {/* ✅ guest면 이름 마스킹 */}
+                    <td style={{ textAlign: "center", color: isGuest ? "#aaa" : "inherit" }}>
+                      {isGuest ? "••••••" : (c.name ?? "No info")}
+                    </td>
+
                     <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
-                    <td style={{ textAlign: "center" }}>{c.cnic_number ?? "No info"}</td>
+
+                    {/* ✅ guest면 CNIC 마스킹 */}
+                    <td style={{ textAlign: "center", color: isGuest ? "#aaa" : "inherit" }}>
+                      {isGuest ? "•••••-•••••••-•" : (c.cnic_number ?? "No info")}
+                    </td>
+
                     <td style={{ textAlign: "center" }}>{c.mobile ?? "No info"}</td>
                     <td style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
                       <button className="primary" onClick={() => navigate(`/clients/${c.id}`)}>
                         View
                       </button>
-                      {/* 삭제 기능 필요하면 주석 제거 */}
-                      {/* <button
-                        className="primary"
-                        style={{ backgroundColor: "gray", borderColor: "gray" }}
-                        onClick={() => handleDelete(c.id)}
-                      >
-                        Delete
-                      </button> */}
                     </td>
                   </tr>
                 ))
@@ -210,7 +202,6 @@ export default function ClientList() {
           flexWrap: "wrap",
         }}
       >
-        {/* 맨 처음 페이지로 */}
         <button 
           disabled={page === 1 || totalPages === 0} 
           onClick={() => setPage(1)}
@@ -218,7 +209,6 @@ export default function ClientList() {
           ≪
         </button>
 
-        {/* 이전 10페이지 */}
         <button 
           disabled={page <= PAGE_GROUP_SIZE} 
           onClick={goToPrevGroup}
@@ -226,7 +216,6 @@ export default function ClientList() {
           ◀
         </button>
 
-        {/* 페이지 번호 */}
         {getPageNumbers().map((p) => (
           <button
             key={p}
@@ -244,7 +233,6 @@ export default function ClientList() {
           </button>
         ))}
 
-        {/* 다음 10페이지 */}
         <button 
           disabled={page > totalPages - PAGE_GROUP_SIZE} 
           onClick={goToNextGroup}
@@ -252,7 +240,6 @@ export default function ClientList() {
           ▶
         </button>
 
-        {/* 맨 마지막 페이지로 */}
         <button 
           disabled={page === totalPages || totalPages === 0} 
           onClick={() => setPage(totalPages)}

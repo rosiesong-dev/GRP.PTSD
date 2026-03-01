@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "./lib/supabase";
+import { useRole } from "./hooks/useRole";
 import "./ClientDetail.css";
 
 type Client = {
@@ -40,6 +41,19 @@ type Client = {
   is_adult_counsel: boolean | null;
 };
 
+// ✅ guest에게 숨길 민감한 필드 목록
+const GUEST_HIDDEN_FIELDS: (keyof Client)[] = [
+  "name",
+  "cnic_number",
+  "mobile",
+  "contact_number",
+  "address",
+  "father_name",
+  "guardian_name",
+  "guardian_contact",
+  "personal_history",
+];
+
 const readOnlyFields: (keyof Client)[] = ["id", "family_id"];
 
 const sections: {
@@ -60,7 +74,6 @@ const sections: {
         { key: "cnic_number", label: "CNIC number" },
         { key: "injured_id", label: "Injured number" },
         { key: "martyr_id", label: "Martyred number" },
-
       ],
     },
     {
@@ -99,7 +112,6 @@ const sections: {
       title: "Family Information",
       fields: [
         { key: "family_id", label: "Family info" },
-        // { key: "client_image", label: "Family pictures" },
       ],
     },
     {
@@ -125,6 +137,7 @@ const sections: {
 export default function ClientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isGuest } = useRole(); // ✅ role 확인
 
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
@@ -137,7 +150,6 @@ export default function ClientDetail() {
   const fetchClient = async () => {
     setLoading(true);
 
-    // 1. client 데이터 가져오기
     const { data: clientData, error: clientError } = await supabase
       .from("clients")
       .select("*")
@@ -151,14 +163,12 @@ export default function ClientDetail() {
       return;
     }
 
-    // 2. counsels 테이블에서 is_adult 값 가져오기
     const { data: counselData } = await supabase
       .from("counsels")
       .select("is_adult")
       .eq("client_id", Number(id))
-      .maybeSingle(); // single 대신 maybeSingle 사용 (데이터가 없어도 에러 안남)
+      .maybeSingle();
 
-    // 3. 두 데이터 합치기
     const finalData = {
       ...clientData,
       is_adult_counsel: counselData?.is_adult ?? null
@@ -181,15 +191,12 @@ export default function ClientDetail() {
     const dataToUpdate: any = {};
     Object.entries(data).forEach(([key, value]) => {
       if (['created_at', 'updated_at'].includes(key)) return;
-
       if (value === undefined) dataToUpdate[key] = null;
       else if (key === "widow" || key === "orphan") dataToUpdate[key] = !!value;
       else dataToUpdate[key] = value;
     });
 
     try {
-      console.log("업데이트 시도 ID:", id, "데이터:", dataToUpdate);
-
       const { data: responseData, error } = await supabase
         .from("clients")
         .update(dataToUpdate)
@@ -211,24 +218,39 @@ export default function ClientDetail() {
     }
   };
 
+  // ✅ 필드 값 렌더링 함수 - guest 마스킹 처리
+  const renderMaskedValue = (key: keyof Client, value: any) => {
+    if (isGuest && GUEST_HIDDEN_FIELDS.includes(key)) {
+      return <span style={{ color: "#aaa", letterSpacing: "2px" }}>••••••</span>;
+    }
+    return null; // 마스킹 불필요 → 기존 렌더링 사용
+  };
+
   if (loading || !client) return <p>Loading ...</p>;
 
   return (
     <div className="detail-container">
-      <h1>[{client.id ?? "Client Detail"}] {client.name ?? "Client Detail"} </h1>
+      <h1>
+        [{client.id ?? "Client Detail"}]{" "}
+        {/* ✅ 제목의 이름도 마스킹 */}
+        {isGuest ? <span style={{ color: "#aaa" }}>••••••</span> : (client.name ?? "Client Detail")}
+      </h1>
 
       <div className="detail-actions" style={{ display: "flex", justifyContent: "space-between" }}>
         <button className="back-btn" onClick={() => navigate("/clients")}>◀ Go to list</button>
-        <div>
-          <button onClick={() => setEditMode(!editMode)}>
-            {editMode ? "Cancel" : "Update"}
-          </button>
-          {editMode && (
-            <button className="save-btn" onClick={handleSave}>
-              Save
+        {/* ✅ guest는 수정 버튼 숨김 */}
+        {!isGuest && (
+          <div>
+            <button onClick={() => setEditMode(!editMode)}>
+              {editMode ? "Cancel" : "Update"}
             </button>
-          )}
-        </div>
+            {editMode && (
+              <button className="save-btn" onClick={handleSave}>
+                Save
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {sections.map((section) => (
@@ -242,15 +264,11 @@ export default function ClientDetail() {
                   const counselingPath = client.counsel_q_adult
                     ? `/counseling2/${client.id}`
                     : `/counseling/${client.id}`;
-
                   return (
                     <tr key={key}>
                       <td className="field-name">{label}</td>
                       <td className="field-value">
-                        <button
-                          className="primary-btn"
-                          onClick={() => navigate(counselingPath)}
-                        >
+                        <button className="primary-btn" onClick={() => navigate(counselingPath)}>
                           View
                         </button>
                       </td>
@@ -263,15 +281,11 @@ export default function ClientDetail() {
                   const pclPath = client.is_adult_counsel
                     ? `/pcl-adult/${client.id}`
                     : `/pcl-child/${client.id}`;
-
                   return (
                     <tr key={key}>
                       <td className="field-name">{label}</td>
                       <td className="field-value">
-                        <button
-                          className="primary-btn"
-                          onClick={() => navigate(pclPath)}
-                        >
+                        <button className="primary-btn" onClick={() => navigate(pclPath)}>
                           View
                         </button>
                       </td>
@@ -285,10 +299,7 @@ export default function ClientDetail() {
                     <tr key={key}>
                       <td className="field-name">{label}</td>
                       <td className="field-value">
-                        <button
-                          className="primary-btn"
-                          onClick={() => navigate(`/counseling-sessions/${client.id}`)}
-                        >
+                        <button className="primary-btn" onClick={() => navigate(`/counseling-sessions/${client.id}`)}>
                           View
                         </button>
                       </td>
@@ -299,45 +310,40 @@ export default function ClientDetail() {
                 const value = client[key as keyof Client];
                 const readOnly = readOnlyFields.includes(key as keyof Client);
 
+                // ✅ guest 마스킹 체크
+                const maskedValue = renderMaskedValue(key as keyof Client, value);
+
                 return (
                   <tr key={key}>
                     <td className="field-name">{label}</td>
                     <td className="field-value">
-                      {editMode && !readOnly ? (
+                      {/* ✅ guest + 민감 필드면 마스킹 표시 */}
+                      {maskedValue ? maskedValue : editMode && !readOnly ? (
                         key === "widow" || key === "orphan" ? (
                           <input
                             type="checkbox"
                             checked={!!value}
-                            onChange={(e) =>
-                              handleChange(key as keyof Client, e.target.checked)
-                            }
+                            onChange={(e) => handleChange(key as keyof Client, e.target.checked)}
                           />
                         ) : key === "birth_date" ? (
                           <input
                             type="date"
                             value={typeof value === "boolean" ? "" : value ?? ""}
-                            onChange={(e) =>
-                              handleChange(key as keyof Client, e.target.value)
-                            }
+                            onChange={(e) => handleChange(key as keyof Client, e.target.value)}
                           />
                         ) : Array.isArray(value) ? (
                           <input
                             type="text"
                             value={value.join(", ")}
                             onChange={(e) =>
-                              handleChange(
-                                key as keyof Client,
-                                e.target.value.split(",").map((v) => v.trim())
-                              )
+                              handleChange(key as keyof Client, e.target.value.split(",").map((v) => v.trim()))
                             }
                           />
                         ) : (
                           <input
                             type="text"
                             value={typeof value === "boolean" ? "" : value ?? ""}
-                            onChange={(e) =>
-                              handleChange(key as keyof Client, e.target.value)
-                            }
+                            onChange={(e) => handleChange(key as keyof Client, e.target.value)}
                           />
                         )
                       ) : key === "family_id" ? (
@@ -367,7 +373,7 @@ export default function ClientDetail() {
         </div>
       ))}
 
-      {editMode && (
+      {!isGuest && editMode && (
         <button className="save-btn" onClick={handleSave}>
           Save
         </button>
