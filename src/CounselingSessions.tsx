@@ -268,10 +268,13 @@ export default function CounselingSessions() {
                                         <strong>Psychological</strong>
                                         {isEditing ? <input type="text" value={session.eval_psychological || ""} onChange={(e) => handleEditChange(index, 'eval_psychological', e.target.value)} style={{ width: 'calc(100% - 150px)', marginLeft: '10px' }} /> : (session.eval_psychological || "No data")}
                                     </div>
-                                    <div className="text-block">
-                                        <strong>Note</strong>
-                                        {isEditing ? <textarea value={session.note || ""} onChange={(e) => handleEditChange(index, 'note', e.target.value)} style={{ flex: 1, minHeight: '60px' }} /> : <span style={{ whiteSpace: 'pre-wrap', flex: 1 }}>{session.note || "No data"}</span>}
-                                    </div>
+                                    {/* ✅ guest면 Note 숨김 */}
+                                    {!isGuest && (
+                                        <div className="text-block">
+                                            <strong>Note</strong>
+                                            {isEditing ? <textarea value={session.note || ""} onChange={(e) => handleEditChange(index, 'note', e.target.value)} style={{ flex: 1, minHeight: '60px' }} /> : <span style={{ whiteSpace: 'pre-wrap', flex: 1 }}>{session.note || "No data"}</span>}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
