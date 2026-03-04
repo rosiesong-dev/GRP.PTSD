@@ -219,7 +219,7 @@ export default function ClientDetail() {
   };
 
   // ✅ 필드 값 렌더링 함수 - guest 마스킹 처리
-  const renderMaskedValue = (key: keyof Client, value: any) => {
+  const renderMaskedValue = (key: keyof Client, _value: any) => {
     if (isGuest && GUEST_HIDDEN_FIELDS.includes(key)) {
       return <span style={{ color: "#aaa", letterSpacing: "2px" }}>••••••</span>;
     }
