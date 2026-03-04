@@ -219,7 +219,7 @@ export default function ClientDetail() {
   };
 
   // ✅ 필드 값 렌더링 함수 - guest 마스킹 처리
-  const renderMaskedValue = (key: keyof Client, _value: any) => {
+  const renderMaskedValue = (key: keyof Client, value: any) => {
     if (isGuest && GUEST_HIDDEN_FIELDS.includes(key)) {
       return <span style={{ color: "#aaa", letterSpacing: "2px" }}>••••••</span>;
     }
@@ -253,7 +253,13 @@ export default function ClientDetail() {
         )}
       </div>
 
-      {sections.map((section) => (
+      {sections.map((section) => {
+        // ✅ guest면 해당 섹션 숨김
+        if (isGuest && ["Family Information", "Counseling Records (PDF)"].includes(section.title)) {
+          return null;
+        }
+
+        return (
         <div key={section.title} className="detail-section">
           <h2>{section.title}</h2>
           <table className="detail-table">
@@ -371,7 +377,8 @@ export default function ClientDetail() {
             </tbody>
           </table>
         </div>
-      ))}
+        );
+      })}
 
       {!isGuest && editMode && (
         <button className="save-btn" onClick={handleSave}>

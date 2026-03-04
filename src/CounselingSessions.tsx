@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "./lib/supabase";
+import { useRole } from "./hooks/useRole";
 import "./CounselingSessions.css";
 
 type CounselSession = {
@@ -34,6 +35,8 @@ type CounselSession = {
 export default function CounselingSessions() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { isGuest } = useRole(); // ✅ role 확인
+
     const [sessions, setSessions] = useState<CounselSession[]>([]);
     const [editedSessions, setEditedSessions] = useState<CounselSession[]>([]);
     const [isEditing, setIsEditing] = useState(false);
@@ -50,7 +53,6 @@ export default function CounselingSessions() {
     const fetchData = async () => {
         setLoading(true);
 
-        // Fetch Client Name and Care Giver
         const { data: cData } = await supabase
             .from("clients")
             .select("name, care_giver")
@@ -63,7 +65,6 @@ export default function CounselingSessions() {
             setEditedCareGiver(cData.care_giver || "");
         }
 
-        // Fetch Counsel Sessions
         const { data: sData, error } = await supabase
             .from("counsels")
             .select("*")
@@ -90,18 +91,14 @@ export default function CounselingSessions() {
     const handleSave = async () => {
         setLoading(true);
         try {
-            // Update counsels
             await Promise.all(
                 editedSessions.map(async (session) => {
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const { care_giver, ...counselData } = session; // Remove care_giver before saving to counsels
-
-                    // Supabase treats "" as an empty string, which is fine, but we always want to update
+                    const { care_giver, ...counselData } = session;
                     await supabase.from("counsels").update(counselData).eq("id", session.id);
                 })
             );
 
-            // Update client care_giver if changed
             if (careGiver !== editedCareGiver) {
                 await supabase.from("clients").update({ care_giver: editedCareGiver }).eq("id", Number(id));
                 setCareGiver(editedCareGiver);
@@ -123,47 +120,51 @@ export default function CounselingSessions() {
         setIsEditing(false);
     };
 
-
-
     if (loading) return <p>Loading...</p>;
 
     return (
         <div className="sessions-wrapper">
             <div className="sessions-header">
                 <h1 className="header-title">Counseling Sessions Brief</h1>
-                <h2 className="header-client">[{id}] {clientName}</h2>
+
+                {/* ✅ guest면 이름 숨기고 Client ID: ??? 표시 */}
+                <h2 className="header-client">
+                    {isGuest
+                        ? `Client ID: ${id}`
+                        : `[${id}] ${clientName}`}
+                </h2>
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                     <button className="back-btn" onClick={() => navigate(`/clients/${id}`)}>
                         ◀ Go to client detail
                     </button>
-                    <div>
-                        {!isEditing ? (
-                            <button className="back-btn" onClick={() => setIsEditing(true)}>
-                                Update
-                            </button>
-                        ) : (
-                            <>
-                                <button className="back-btn" style={{ marginRight: '10px' }} onClick={handleCancel}>
-                                    Cancel
+                    {/* ✅ guest는 Update/Save 버튼 숨김 */}
+                    {!isGuest && (
+                        <div>
+                            {!isEditing ? (
+                                <button className="back-btn" onClick={() => setIsEditing(true)}>
+                                    Update
                                 </button>
-                                <button className="back-btn" style={{ backgroundColor: 'orange' }} onClick={handleSave}>
-                                    Save
-                                </button>
-                            </>
-                        )}
-                    </div>
+                            ) : (
+                                <>
+                                    <button className="back-btn" style={{ marginRight: '10px' }} onClick={handleCancel}>
+                                        Cancel
+                                    </button>
+                                    <button className="back-btn" style={{ backgroundColor: 'orange' }} onClick={handleSave}>
+                                        Save
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* Static Info Block */}
             {sessions.length > 0 && (
                 <div className="session-section" style={{ marginBottom: '30px', display: 'flex', border: 'none', boxShadow: 'none', padding: '0 20px', borderRadius: '0', backgroundColor: 'transparent' }}>
-                    <div style={{ flex: 1 }}>
-                        {/* Column 1 Empty */}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                        {/* Column 2 Empty */}
-                    </div>
+                    <div style={{ flex: 1 }}></div>
+                    <div style={{ flex: 1 }}></div>
                     <div style={{ flex: 1 }}>
                         <strong>S-Scholarship</strong>
                     </div>
@@ -211,9 +212,7 @@ export default function CounselingSessions() {
                                                 <span className={`badge badge-${session.status.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").trim().replace(" ", "") || "default"}`}>
                                                     {session.status.replace(/[^\p{L}\p{N}\s-]/gu, "").trim()}
                                                 </span>
-                                            ) : (
-                                                "-"
-                                            )
+                                            ) : "-"
                                         )}
                                     </div>
                                     <div className="info-item">
@@ -225,9 +224,7 @@ export default function CounselingSessions() {
                                                 <span className={`badge badge-${session.emergency.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").trim().replace(" ", "") || "default"}`}>
                                                     {session.emergency.replace(/[^\p{L}\p{N}\s-]/gu, "").trim()}
                                                 </span>
-                                            ) : (
-                                                "-"
-                                            )
+                                            ) : "-"
                                         )}
                                     </div>
                                     <div className="info-item">
@@ -250,7 +247,6 @@ export default function CounselingSessions() {
                                         {session.eval_average != null && <span className="score-badge">Avg: {session.eval_average}</span>}
                                     </div>
                                 </div>
-
                                 <div className="eval-content mt-3">
                                     <div className="text-block">
                                         <strong>Spiritual</strong>

@@ -177,7 +177,10 @@ export default function ClientList() {
                       {isGuest ? "•••••-•••••••-•" : (c.cnic_number ?? "No info")}
                     </td>
 
-                    <td style={{ textAlign: "center" }}>{c.mobile ?? "No info"}</td>
+                    {/* ✅ guest면 Mobile 마스킹 */}
+                    <td style={{ textAlign: "center", color: isGuest ? "#aaa" : "inherit" }}>
+                      {isGuest ? "•••-••••••••" : (c.mobile ?? "No info")}
+                    </td>
                     <td style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
                       <button className="primary" onClick={() => navigate(`/clients/${c.id}`)}>
                         View
