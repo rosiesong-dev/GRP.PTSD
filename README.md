@@ -20,7 +20,7 @@ Most counseling records and victim data were stored in paper documents and PDFs,
 ## 🛠️ Tech Stack
 - Frontend: React, TypeScript, Vite, CSS  
 - Backend / Database: PostgreSQL, Supabase  
-- Tools: Git, API Integration, Raspberry Pi  
+- Tools: Git, API Integration  
 - Data Processing: OCR, Manual Data Validation  
 
 ---
