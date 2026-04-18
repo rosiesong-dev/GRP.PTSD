@@ -1,73 +1,89 @@
-# React + TypeScript + Vite
+# PTSD Counseling Data Management System (GRP Project - Pakistan)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📌 Project Overview
+This project was developed as part of the GRP program to support the digitization and integrated management of PTSD counseling records for victims and families affected by the 2013 Peshawar Church terrorist attack in Pakistan.  
 
-Currently, two official plugins are available:
+The goal was to build a system that enables structured data management and supports more efficient administrative and counseling processes for local institutions.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🚨 Problem Statement
+Most counseling records and victim data were stored in paper documents and PDFs, resulting in:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Risk of data loss or damage  
+- Difficulty in searching and accessing information  
+- Fragmented data management across institutions  
+- Inefficient administrative support processes  
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Tech Stack
+- Frontend: React, TypeScript, Vite, CSS  
+- Backend / Database: PostgreSQL, Supabase  
+- Tools: Git, API Integration, Raspberry Pi  
+- Data Processing: OCR, Manual Data Validation  
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🧩 My Role & Contributions
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 1. Database Design & Development
+- Designed and built a relational database using PostgreSQL and Supabase  
+- Structured Client / Family / Counseling data for systematic management  
+- Defined data relationships for integrated case management  
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Data Processing & Integration
+- Consolidated scattered Injured/Martyrs data into a unified Client List  
+- Assigned unique Client IDs to each client  
+- Matched family information using Client IDs  
+- Converted 128 handwritten counseling records into structured data using OCR  
+- Verified data accuracy through manual review and correction  
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 3. Web Development
+- Built a web system using React, TypeScript, and Vite  
+- Implemented Client List (CRUD), Client Detail, Family Info, Counseling Results, and PCL-5 Results pages  
+- Enabled viewing and editing of counseling and assessment data  
+- Implemented role-based access control (restricted guest permissions)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## ⚙️ Key Features
+- Centralized client and counseling data management system  
+- OCR-based digitization of handwritten records  
+- Integrated family and client relationship mapping  
+- Role-based access control system  
+- Structured data visualization and management interface  
+
+---
+
+## ⚠️ Challenges
+
+### Handwritten Data Processing
+- OCR results required extensive manual validation for accuracy  
+
+### Data Inconsistency
+- Missing and inconsistent client information across documents required manual correction and standardization  
+
+### Cross-Disciplinary Collaboration
+- As the only Computer Science member and team leader, bridging communication gaps between different majors was challenging  
+
+### Understanding Local Needs
+- Initially focused on system development, but later learned that understanding local needs was more important than technical complexity  
+
+---
+
+## 💡 Key Learnings
+- Technology can be applied to solve real social problems  
+- Understanding client needs is more important than output itself  
+- Effective communication is essential in interdisciplinary collaboration  
+- Practical and sustainable system design is critical for real-world impact  
+
+---
+
+## 📷 Project Status
+Completed (Prototype / Academic Project)
+
+---
+
+## 🔗 Repository
+[GitHub Link](https://github.com/rosiesong-dev/GRP.PTSD.git)
