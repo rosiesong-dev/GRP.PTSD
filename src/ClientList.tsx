@@ -9,9 +9,10 @@ type Client = {
   birth_date: string | null;
   cnic_number: string | null;
   mobile: string | null;
+  serial_num: string | null;
 };
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 50;
 const PAGE_GROUP_SIZE = 10; // 페이지 번호 10개씩
 
 export default function ClientList() {
@@ -39,9 +40,9 @@ export default function ClientList() {
 
     let query = supabase
       .from("clients")
-      .select("id, name, birth_date, cnic_number, mobile", { count: "exact" })
+      .select("id, serial_num, name, birth_date, cnic_number, mobile", { count: "exact" })
       .range(from, to)
-      .order("id", { ascending: true });
+      .order("name", { ascending: true });
 
     if (search.trim() !== "") {
       // 이름 또는 CNIC 번호로 검색
@@ -146,6 +147,7 @@ export default function ClientList() {
             <thead>
               <tr>
                 <th>ID</th> 
+                <th>Serial Number</th>
                 <th>Name</th>
                 <th>Birth Date</th>
                 <th>CNIC number</th>
@@ -164,7 +166,7 @@ export default function ClientList() {
                 clients.map((c) => (
                   <tr key={c.id}>
                     <td style={{ textAlign: "center" }}>{c.id}</td>
-
+                    <td style={{ textAlign: "center" }}>{c.serial_num ?? "No info"}</td>
                     {/* ✅ guest면 이름 마스킹 */}
                     <td style={{ textAlign: "center", color: isGuest ? "#aaa" : "inherit" }}>
                       {isGuest ? "••••••" : (c.name ?? "No info")}
