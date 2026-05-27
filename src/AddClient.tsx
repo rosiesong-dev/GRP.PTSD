@@ -8,6 +8,7 @@ export default function AddClient() {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
+    serial_num: "",
     name: "",
     status: "",
     birth_date: "",
@@ -60,6 +61,7 @@ export default function AddClient() {
     const family_id = form.family_id ? Number(form.family_id) : null;
 
     const { error } = await supabase.from("clients").insert({
+      serial_num: form.serial_num || null,
       name: form.name.trim(),
       status: form.status || null,
       birth_date: form.birth_date || null,
@@ -111,6 +113,7 @@ export default function AddClient() {
       <h1 className="title">Add new Client</h1>
 
       <div className="form-grid">
+        Serial Number: <input className="input" name="serial_num" value={form.serial_num} placeholder="Serial Number" onChange={handleChange} />
         Name: <input className="input" name="name" value={form.name} placeholder="Name *" onChange={handleChange} />
         Status: <input className="input" name="status" value={form.status} placeholder="Status" onChange={handleChange} />
         Birthday: <input className="input" type="date" name="birth_date" value={form.birth_date} onChange={handleChange} />

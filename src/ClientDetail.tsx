@@ -6,6 +6,7 @@ import "./ClientDetail.css";
 
 type Client = {
   id: number;
+  serial_num: string | null;
   name: string | null;
   status: string | null;
   birth_date: string | null;
@@ -43,6 +44,7 @@ type Client = {
 
 // ✅ guest에게 숨길 민감한 필드 목록
 const GUEST_HIDDEN_FIELDS: (keyof Client)[] = [
+  "serial_num",
   "name",
   "cnic_number",
   "mobile",
@@ -63,6 +65,7 @@ const sections: {
     {
       title: "Basic Information",
       fields: [
+        { key: "serial_num", label: "Serial Number" },
         { key: "name", label: "Name" },
         { key: "profile_image", label: "Profile (사진)" },
         { key: "status", label: "Status" },
