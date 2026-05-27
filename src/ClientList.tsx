@@ -202,6 +202,7 @@ export default function ClientList() {
           display: "flex",
           gap: "10px",
           marginBottom: "20px",
+          flexWrap: "wrap",
         }}
       >
         <button
@@ -276,6 +277,32 @@ export default function ClientList() {
         >
           Name{" "}
           {sortField === "name"
+            ? sortAsc
+              ? "▲"
+              : "▼"
+            : ""}
+        </button>
+
+        <button
+          onClick={() => handleSort("cnic_number")}
+          style={{
+            padding: "8px 14px",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            backgroundColor:
+              sortField === "cnic_number"
+                ? "#2563eb"
+                : "#E5E7EB",
+            color:
+              sortField === "cnic_number"
+                ? "white"
+                : "black",
+            fontWeight: "600",
+          }}
+        >
+          CNIC Number{" "}
+          {sortField === "cnic_number"
             ? sortAsc
               ? "▲"
               : "▼"
