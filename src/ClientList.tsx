@@ -42,7 +42,7 @@ export default function ClientList() {
       .from("clients")
       .select("id, serial_num, name, birth_date, cnic_number, mobile", { count: "exact" })
       .range(from, to)
-      .order("name", { ascending: true });
+      .order("id", { ascending: true });
 
     if (search.trim() !== "") {
       // 이름 또는 CNIC 번호로 검색
