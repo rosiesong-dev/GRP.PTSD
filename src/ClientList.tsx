@@ -5,15 +5,15 @@ import "./ClientList.css";
 
 type Client = {
   id: number;
+  serial_num: string | null;
   name: string | null;
   birth_date: string | null;
   cnic_number: string | null;
   mobile: string | null;
-  serial_num: string | null;
 };
 
 const PAGE_SIZE = 50;
-const PAGE_GROUP_SIZE = 10; // 페이지 번호 10개씩
+const PAGE_GROUP_SIZE = 10;
 
 export default function ClientList() {
   const navigate = useNavigate();
@@ -24,13 +24,27 @@ export default function ClientList() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ role 확인
+  // 정렬 state
+  const [sortField, setSortField] = useState("id");
+  const [sortAsc, setSortAsc] = useState(true);
+
+  // role 확인
   const role = sessionStorage.getItem("role");
   const isGuest = role === "guest";
 
   useEffect(() => {
     fetchClients();
-  }, [page, search]);
+  }, [page, search, sortField, sortAsc]);
+
+  // 정렬 함수
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortAsc(!sortAsc);
+    } else {
+      setSortField(field);
+      setSortAsc(true);
+    }
+  };
 
   const fetchClients = async () => {
     setLoading(true);
@@ -40,13 +54,17 @@ export default function ClientList() {
 
     let query = supabase
       .from("clients")
-      .select("id, serial_num, name, birth_date, cnic_number, mobile", { count: "exact" })
+      .select(
+        "id, serial_num, name, birth_date, cnic_number, mobile",
+        { count: "exact" }
+      )
       .range(from, to)
-      .order("id", { ascending: true });
+      .order(sortField, { ascending: sortAsc });
 
     if (search.trim() !== "") {
-      // 이름 또는 CNIC 번호로 검색
-      query = query.or(`name.ilike.%${search}%,cnic_number.ilike.%${search}%`);
+      query = query.or(
+        `name.ilike.%${search}%,cnic_number.ilike.%${search}%`
+      );
     }
 
     const { data, error, count } = await query;
@@ -64,25 +82,39 @@ export default function ClientList() {
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-  // 🔢 페이지 번호 10개씩 계산
   const getPageNumbers = () => {
     const pages: number[] = [];
-    const start = Math.floor((page - 1) / PAGE_GROUP_SIZE) * PAGE_GROUP_SIZE + 1;
-    const end = Math.min(start + PAGE_GROUP_SIZE - 1, totalPages);
 
-    for (let i = start; i <= end; i++) pages.push(i);
+    const start =
+      Math.floor((page - 1) / PAGE_GROUP_SIZE) *
+        PAGE_GROUP_SIZE +
+      1;
+
+    const end = Math.min(
+      start + PAGE_GROUP_SIZE - 1,
+      totalPages
+    );
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
 
     return pages;
   };
 
-  // 이전/다음 10페이지 이동 (범위 제한)
   const goToPrevGroup = () => {
-    const newPage = Math.max(1, page - PAGE_GROUP_SIZE);
+    const newPage = Math.max(
+      1,
+      page - PAGE_GROUP_SIZE
+    );
     setPage(newPage);
   };
 
   const goToNextGroup = () => {
-    const newPage = Math.min(totalPages, page + PAGE_GROUP_SIZE);
+    const newPage = Math.min(
+      totalPages,
+      page + PAGE_GROUP_SIZE
+    );
     setPage(newPage);
   };
 
@@ -100,9 +132,19 @@ export default function ClientList() {
 
   return (
     <div className="container">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+
+      {/* 상단 */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
         <h1>Clients List</h1>
-        <button 
+
+        <button
           onClick={handleLogout}
           style={{
             padding: "8px 16px",
@@ -111,15 +153,22 @@ export default function ClientList() {
             border: "none",
             borderRadius: "6px",
             cursor: "pointer",
-            fontWeight: "500"
+            fontWeight: "500",
           }}
         >
           🚪 Logout
         </button>
       </div>
 
-      {/* 🔍 검색 + ➕ Add 버튼 */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+      {/* 검색 + Add 버튼 */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "20px",
+        }}
+      >
         <input
           type="text"
           placeholder="Search by Name / CNIC number"
@@ -128,17 +177,113 @@ export default function ClientList() {
             setPage(1);
             setSearch(e.target.value);
           }}
-          style={{ padding: "10px", width: "300px", borderRadius: "8px", border: "1px solid #ccc" }}
+          style={{
+            padding: "10px",
+            width: "300px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+          }}
         />
-        {/* ✅ guest는 Add 버튼 숨김 (필요 시 제거) */}
+
         {!isGuest && (
-          <button className="primary" onClick={handleAddClient} style={{ padding: "10px 16px" }}>
+          <button
+            className="primary"
+            onClick={handleAddClient}
+            style={{ padding: "10px 16px" }}
+          >
             + Add
           </button>
         )}
       </div>
 
-      {/* 📋 테이블 */}
+      {/* 정렬 버튼 */}
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginBottom: "20px",
+        }}
+      >
+        <button
+          onClick={() => handleSort("id")}
+          style={{
+            padding: "8px 14px",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            backgroundColor:
+              sortField === "id"
+                ? "#2563eb"
+                : "#E5E7EB",
+            color:
+              sortField === "id"
+                ? "white"
+                : "black",
+            fontWeight: "600",
+          }}
+        >
+          ID{" "}
+          {sortField === "id"
+            ? sortAsc
+              ? "▲"
+              : "▼"
+            : ""}
+        </button>
+
+        <button
+          onClick={() => handleSort("serial_num")}
+          style={{
+            padding: "8px 14px",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            backgroundColor:
+              sortField === "serial_num"
+                ? "#2563eb"
+                : "#E5E7EB",
+            color:
+              sortField === "serial_num"
+                ? "white"
+                : "black",
+            fontWeight: "600",
+          }}
+        >
+          Serial Number{" "}
+          {sortField === "serial_num"
+            ? sortAsc
+              ? "▲"
+              : "▼"
+            : ""}
+        </button>
+
+        <button
+          onClick={() => handleSort("name")}
+          style={{
+            padding: "8px 14px",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+            backgroundColor:
+              sortField === "name"
+                ? "#2563eb"
+                : "#E5E7EB",
+            color:
+              sortField === "name"
+                ? "white"
+                : "black",
+            fontWeight: "600",
+          }}
+        >
+          Name{" "}
+          {sortField === "name"
+            ? sortAsc
+              ? "▲"
+              : "▼"
+            : ""}
+        </button>
+      </div>
+
+      {/* 테이블 */}
       <div className="card">
         {loading ? (
           <p>Loading ...</p>
@@ -146,7 +291,7 @@ export default function ClientList() {
           <table width="100%" cellPadding={8}>
             <thead>
               <tr>
-                <th>ID</th> 
+                <th>ID</th>
                 <th>Serial Number</th>
                 <th>Name</th>
                 <th>Birth Date</th>
@@ -155,36 +300,85 @@ export default function ClientList() {
                 <th>Details</th>
               </tr>
             </thead>
+
             <tbody>
               {clients.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: "center" }}>
+                  <td
+                    colSpan={7}
+                    style={{ textAlign: "center" }}
+                  >
                     데이터 없음
                   </td>
                 </tr>
               ) : (
                 clients.map((c) => (
                   <tr key={c.id}>
-                    <td style={{ textAlign: "center" }}>{c.id}</td>
-                    <td style={{ textAlign: "center" }}>{c.serial_num ?? "No info"}</td>
-                    {/* ✅ guest면 이름 마스킹 */}
-                    <td style={{ textAlign: "center", color: isGuest ? "#aaa" : "inherit" }}>
-                      {isGuest ? "••••••" : (c.name ?? "No info")}
+                    <td style={{ textAlign: "center" }}>
+                      {c.id}
                     </td>
 
-                    <td style={{ textAlign: "center" }}>{c.birth_date ?? "No info"}</td>
-
-                    {/* ✅ guest면 CNIC 마스킹 */}
-                    <td style={{ textAlign: "center", color: isGuest ? "#aaa" : "inherit" }}>
-                      {isGuest ? "•••••-•••••••-•" : (c.cnic_number ?? "No info")}
+                    <td style={{ textAlign: "center" }}>
+                      {c.serial_num ?? "No info"}
                     </td>
 
-                    {/* ✅ guest면 Mobile 마스킹 */}
-                    <td style={{ textAlign: "center", color: isGuest ? "#aaa" : "inherit" }}>
-                      {isGuest ? "•••-••••••••" : (c.mobile ?? "No info")}
+                    <td
+                      style={{
+                        textAlign: "center",
+                        color: isGuest
+                          ? "#aaa"
+                          : "inherit",
+                      }}
+                    >
+                      {isGuest
+                        ? "••••••"
+                        : c.name ?? "No info"}
                     </td>
-                    <td style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
-                      <button className="primary" onClick={() => navigate(`/clients/${c.id}`)}>
+
+                    <td style={{ textAlign: "center" }}>
+                      {c.birth_date ?? "No info"}
+                    </td>
+
+                    <td
+                      style={{
+                        textAlign: "center",
+                        color: isGuest
+                          ? "#aaa"
+                          : "inherit",
+                      }}
+                    >
+                      {isGuest
+                        ? "•••••-•••••••-•"
+                        : c.cnic_number ??
+                          "No info"}
+                    </td>
+
+                    <td
+                      style={{
+                        textAlign: "center",
+                        color: isGuest
+                          ? "#aaa"
+                          : "inherit",
+                      }}
+                    >
+                      {isGuest
+                        ? "•••-••••••••"
+                        : c.mobile ?? "No info"}
+                    </td>
+
+                    <td
+                      style={{
+                        display: "flex",
+                        gap: "6px",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <button
+                        className="primary"
+                        onClick={() =>
+                          navigate(`/clients/${c.id}`)
+                        }
+                      >
                         View
                       </button>
                     </td>
@@ -196,7 +390,7 @@ export default function ClientList() {
         )}
       </div>
 
-      {/* ⏩ 페이지네이션 */}
+      {/* 페이지네이션 */}
       <div
         style={{
           marginTop: "20px",
@@ -207,15 +401,15 @@ export default function ClientList() {
           flexWrap: "wrap",
         }}
       >
-        <button 
-          disabled={page === 1 || totalPages === 0} 
+        <button
+          disabled={page === 1 || totalPages === 0}
           onClick={() => setPage(1)}
         >
           ≪
         </button>
 
-        <button 
-          disabled={page <= PAGE_GROUP_SIZE} 
+        <button
+          disabled={page <= PAGE_GROUP_SIZE}
           onClick={goToPrevGroup}
         >
           ◀
@@ -229,24 +423,32 @@ export default function ClientList() {
               padding: "6px 10px",
               borderRadius: "6px",
               border: "1px solid #ccc",
-              backgroundColor: p === page ? "#007bff" : "white",
-              color: p === page ? "white" : "black",
-              fontWeight: p === page ? "bold" : "normal",
+              backgroundColor:
+                p === page ? "#007bff" : "white",
+              color:
+                p === page ? "white" : "black",
+              fontWeight:
+                p === page ? "bold" : "normal",
             }}
           >
             {p}
           </button>
         ))}
 
-        <button 
-          disabled={page > totalPages - PAGE_GROUP_SIZE} 
+        <button
+          disabled={
+            page > totalPages - PAGE_GROUP_SIZE
+          }
           onClick={goToNextGroup}
         >
           ▶
         </button>
 
-        <button 
-          disabled={page === totalPages || totalPages === 0} 
+        <button
+          disabled={
+            page === totalPages ||
+            totalPages === 0
+          }
           onClick={() => setPage(totalPages)}
         >
           ≫
