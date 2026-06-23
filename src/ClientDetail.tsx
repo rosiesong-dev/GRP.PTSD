@@ -140,7 +140,7 @@ const sections: {
 export default function ClientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isGuest } = useRole(); // ✅ role 확인
+  const { isGuest, isNoUpdate } = useRole(); // ✅ role 확인
 
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
@@ -242,7 +242,7 @@ export default function ClientDetail() {
       <div className="detail-actions" style={{ display: "flex", justifyContent: "space-between" }}>
         <button className="back-btn" onClick={() => navigate("/clients")}>◀ Go to list</button>
         {/* ✅ guest는 수정 버튼 숨김 */}
-        {!isGuest && (
+        {!isGuest && !isNoUpdate && (
           <div>
             <button onClick={() => setEditMode(!editMode)}>
               {editMode ? "Cancel" : "Update"}
@@ -383,7 +383,7 @@ export default function ClientDetail() {
         );
       })}
 
-      {!isGuest && editMode && (
+      {!isGuest && !isNoUpdate && editMode && (
         <button className="save-btn" onClick={handleSave}>
           Save
         </button>
